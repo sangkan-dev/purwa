@@ -3,6 +3,7 @@
 //! **WASM:** the `inventory` crate relies on linker sections; Purwa routing macros do not
 //! support `wasm32` targets (see project README / AGENT.md).
 
+use std::cmp::Reverse;
 use std::collections::HashSet;
 
 use axum::Router;
@@ -44,7 +45,7 @@ pub fn router_from_inventory() -> Router {
 
     let mut seen = HashSet::new();
     entries.retain(|e| seen.insert(e.install as usize));
-    entries.sort_by(|a, b| b.path.len().cmp(&a.path.len()));
+    entries.sort_by_key(|e| Reverse(e.path.len()));
 
     let mut router = Router::new();
     for e in entries {
