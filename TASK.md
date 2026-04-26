@@ -132,15 +132,15 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] `purwa-orm`: SQLx integration, connection from config.
-- [ ] Timestamped SQL migrations layout per PRD §6; embed or run from `database/migrations`.
-- [ ] CLI: `empu migrate`, `empu migrate:rollback`, `empu migrate:fresh` (names per PRD §8.1).
-- [ ] Optional feature scaffold: `sea-orm` behind `purwa` feature flag (can be minimal in this sprint).
+- [x] `purwa-orm`: SQLx integration, connection from config.
+- [x] Timestamped SQL migrations layout per PRD §6; embed or run from `database/migrations`.
+- [x] CLI: `empu migrate`, `empu migrate:rollback`, `empu migrate:fresh` (names per PRD §8.1).
+- [x] Optional feature scaffold: `sea-orm` behind `purwa` feature flag (can be minimal in this sprint).
 
 ### Done when
 
-- [ ] PRD §11: `empu migrate` runs cleanly on sample project.
-- [ ] **Integration tests (Q4):** minimal satu alur migrasi + query terhadap Postgres **nyata** di CI via **testcontainers** (disarankan) atau job CI dengan service Postgres; dokumentasi env `TEST_DATABASE_URL` untuk lokal.
+- [x] PRD §11: `empu migrate` runs cleanly on sample project.
+- [x] **Integration tests (Q4):** minimal satu alur migrasi + query terhadap Postgres **nyata** di CI via **testcontainers** (disarankan) atau job CI dengan service Postgres; dokumentasi env `TEST_DATABASE_URL` untuk lokal.
 
 ---
 
@@ -327,6 +327,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 1: Cargo workspace, stubs, `purwa-core` Axum hello, MIT, README, CI |
 | 2026-04-26 | Sprint 2: `purwa-macros`, `inventory` routing, `#[resource]`, `format_route_table`, `empu route:list` stub; full CLI deferred S8 |
 | 2026-04-26 | Sprint 3: `AppConfig`/`AppState`, dotenvy+config, `purwa.toml.example`, `.env.example`, config integration test |
+| 2026-04-26 | Sprint 4: `sqlx`/`PgPool`/`AppState`, `purwa-orm` migrate helpers, `empu migrate*`, `sea-orm` feature stub, testcontainers IT |
 
 ---
 

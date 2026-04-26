@@ -3,6 +3,33 @@ name = "purwa-orm"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "SQLx wrapper and optional SeaORM bridge for Purwa (stub until Sprint 4)"
+description = "SQLx migrations and pool helpers for Purwa; optional SeaORM bridge"
+
+[features]
+default = []
+sea-orm = ["dep:sea-orm"]
 
 [dependencies]
+purwa-core = { path = "../purwa-core" }
+sea-orm = { version = "1.1", optional = true, default-features = false, features = [
+    "runtime-tokio-rustls",
+    "sqlx-postgres",
+] }
+sqlx = { version = "0.8.6", default-features = false, features = [
+    "runtime-tokio",
+    "postgres",
+    "migrate",
+    "tls-rustls-ring",
+] }
+thiserror = "2.0.18"
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
+
+[dev-dependencies]
+sqlx = { version = "0.8.6", default-features = false, features = [
+    "runtime-tokio",
+    "postgres",
+    "tls-rustls-ring",
+] }
+testcontainers = "0.25.0"
+testcontainers-modules = { version = "0.13.0", features = ["postgres"] }
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }

@@ -11,6 +11,7 @@ config = "0.15.22"
 dotenvy = "0.15.7"
 inventory = "0.3.24"
 serde = { version = "1.0.228", features = ["derive"] }
+sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio", "postgres", "migrate", "tls-rustls-ring"] }
 thiserror = "2.0.18"
 tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
 

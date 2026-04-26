@@ -5,11 +5,16 @@ edition.workspace = true
 license.workspace = true
 description = "The fundamental Rust web framework — facade re-exports"
 
+[features]
+default = []
+sea-orm = ["dep:purwa-orm", "purwa-orm/sea-orm"]
+
 [dependencies]
 axum = "0.8"
 inventory = "0.3.24"
 purwa-core = { path = "../purwa-core" }
 purwa-macros = { version = "0.1.0", path = "../purwa-macros" }
+purwa-orm = { path = "../purwa-orm", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }

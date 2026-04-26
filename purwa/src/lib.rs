@@ -14,7 +14,10 @@ pub mod routing {
 pub use purwa_macros::{delete, get, post, put, resource};
 
 pub use purwa_core::{
-    AppConfig, AppSection, AppState, AxumRouter, PurwaConfigError, RegisteredRoute,
-    RouteDescriptor, ServerSection, app_router, format_route_table, route_descriptors,
-    router_from_inventory,
+    AppConfig, AppSection, AppState, AxumRouter, DatabaseSection, PgPool, PurwaConfigError,
+    RegisteredRoute, RouteDescriptor, ServerSection, app_router, format_route_table,
+    route_descriptors, router_from_inventory,
 };
+
+#[cfg(feature = "sea-orm")]
+pub use purwa_orm;

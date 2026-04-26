@@ -18,6 +18,10 @@ Purwa is an opinionated Rust web framework from **Sangkan**: Laravel-class devel
 
 Settings load from optional **`purwa.toml`** in the working directory and from environment variables prefixed with **`PURWA`**, with nested keys separated by **`__`** (for example `PURWA_SERVER__PORT`). A **`.env`** file is read via [`dotenvy`](https://docs.rs/dotenvy) when present. See [purwa.toml.example](./purwa.toml.example) and [.env.example](./.env.example).
 
+**Database URL:** set `[database].url` in `purwa.toml`, or `PURWA_DATABASE__URL`, or `DATABASE_URL`. Use this for [`PgPool`](https://docs.rs/sqlx/latest/sqlx/type.PgPool.html), [`AppState`](purwa-core/src/lib.rs), and `empu migrate` (Sprint 4).
+
+**Integration tests:** framework crates use **testcontainers** where noted (requires Docker). To run Postgres-backed tests against a fixed instance instead, set **`TEST_DATABASE_URL`** to a disposable database (see [.env.example](./.env.example)). Example migration files: [purwa-orm/tests/fixtures/migrations](./purwa-orm/tests/fixtures/migrations) (copy into your app’s `database/migrations`).
+
 Merging **inventory-based routes** ([`router_from_inventory`](purwa-core/src/routing.rs)) with a router that uses **`AppState`** (typed `Router<AppState>`) is a composition detail for your `main` (Sprint 4+ may refine helpers); handlers that need config should use `State<Arc<AppConfig>>` with [`AppState`](purwa-core/src/lib.rs) and Axum `FromRef`.
 
 ## Routing note

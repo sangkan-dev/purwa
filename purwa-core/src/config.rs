@@ -4,7 +4,10 @@
 //!
 //! 1. Optional `purwa.toml` (or an explicit path from [`AppConfig::load_with_file`]).
 //! 2. Environment variables with prefix `PURWA` and nested keys separated by `__`
-//!    (e.g. `PURWA_SERVER__PORT=8080`).
+//!    (e.g. `PURWA_SERVER__PORT=8080`, `PURWA_DATABASE__URL=postgres://...`).
+//!
+//! After load, [`AppConfig::database_url`] also checks `DATABASE_URL` (no prefix) when
+//! `[database].url` is unset.
 //!
 //! `dotenvy::dotenv()` runs from [`AppConfig::load`] / [`AppConfig::load_with_file`] so a project
 //! `.env` is loaded when present (missing file is ignored).
@@ -61,12 +64,21 @@ impl Default for ServerSection {
     }
 }
 
+/// Top-level `[database]` section in `purwa.toml`.
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(default)]
+pub struct DatabaseSection {
+    /// Postgres connection URL (optional if `DATABASE_URL` is set at runtime).
+    pub url: Option<String>,
+}
+
 /// Framework configuration: `purwa.toml` + env (`PURWA_*`).
 #[derive(Debug, Clone, Default, Deserialize)]
 #[serde(default)]
 pub struct AppConfig {
     pub app: AppSection,
     pub server: ServerSection,
+    pub database: DatabaseSection,
 }
 
 impl AppConfig {
@@ -95,5 +107,21 @@ impl AppConfig {
         let cfg = builder.build()?;
         let app: AppConfig = cfg.try_deserialize()?;
         Ok(Arc::new(app))
+    }
+
+    /// Resolved database connection URL for SQLx / `PgPool`.
+    ///
+    /// Order: `[database].url` from config (file + `PURWA_DATABASE__URL`), then `DATABASE_URL`.
+    pub fn database_url(&self) -> Option<String> {
+        if let Some(ref u) = self.database.url {
+            let t = u.trim();
+            if !t.is_empty() {
+                return Some(t.to_string());
+            }
+        }
+        std::env::var("DATABASE_URL")
+            .ok()
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
     }
 }

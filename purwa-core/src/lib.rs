@@ -11,28 +11,34 @@ use std::sync::Arc;
 use axum::extract::FromRef;
 use axum::{Router, routing::get};
 
-pub use config::{AppConfig, AppSection, PurwaConfigError, ServerSection};
+pub use config::{AppConfig, AppSection, DatabaseSection, PurwaConfigError, ServerSection};
 pub use routing::{
     RegisteredRoute, RouteDescriptor, format_route_table, route_descriptors, router_from_inventory,
 };
+pub use sqlx::PgPool;
 
 /// Shared application state (PRD §5.3). Holds `Arc` resources only — no globals.
-///
-/// Sprint 4 will add `db: Arc<PgPool>` (or equivalent) alongside [`config`](AppConfig).
 #[derive(Clone)]
 pub struct AppState {
     pub config: Arc<AppConfig>,
+    pub db: Arc<PgPool>,
 }
 
 impl AppState {
-    pub fn new(config: Arc<AppConfig>) -> Self {
-        Self { config }
+    pub fn new(config: Arc<AppConfig>, db: Arc<PgPool>) -> Self {
+        Self { config, db }
     }
 }
 
 impl FromRef<AppState> for Arc<AppConfig> {
     fn from_ref(state: &AppState) -> Self {
         state.config.clone()
+    }
+}
+
+impl FromRef<AppState> for PgPool {
+    fn from_ref(state: &AppState) -> Self {
+        state.db.as_ref().clone()
     }
 }
 
