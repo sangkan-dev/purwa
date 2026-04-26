@@ -1,0 +1,15 @@
+//! Smoke test: inventory router responds on `/health` without Postgres.
+
+#![forbid(unsafe_code)]
+
+use axum::http::StatusCode;
+use purwa::router_from_inventory;
+use purwa_testing::oneshot_status;
+use {{ rust_lib_name }} as _;
+
+#[tokio::test]
+async fn health_ok() {
+    let app = router_from_inventory();
+    let status = oneshot_status(app, "/health").await;
+    assert_eq!(status, StatusCode::OK);
+}

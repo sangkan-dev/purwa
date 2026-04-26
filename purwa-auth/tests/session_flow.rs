@@ -6,12 +6,12 @@ use std::sync::{Arc, Mutex};
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
 use axum::response::IntoResponse;
-use serde_json::Value;
 use axum::routing::{get, post};
 use axum::{Form, Router};
 use axum_login::{AuthManagerLayerBuilder, AuthSession, AuthUser, AuthnBackend, UserId};
 use http_body_util::BodyExt;
 use serde::Deserialize;
+use serde_json::Value;
 use tower::ServiceExt;
 
 use purwa_auth::{CurrentUser, memory_session_layer};
@@ -135,9 +135,7 @@ async fn me_without_cookie_returns_401_purwa_error_json() {
     let session_layer = memory_session_layer();
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
-    let app = Router::new()
-        .route("/me", get(me))
-        .layer(auth_layer);
+    let app = Router::new().route("/me", get(me)).layer(auth_layer);
 
     let req = Request::builder()
         .method("GET")

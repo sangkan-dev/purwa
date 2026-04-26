@@ -206,6 +206,27 @@ pub fn purwa_dep_toml(purwa_path: Option<&Path>) -> String {
     }
 }
 
+/// `purwa-testing` dev-dependency line inner (after `purwa-testing = { `, before ` }`).
+pub fn purwa_testing_dep_toml(purwa_path: Option<&Path>) -> String {
+    sibling_crate_dep(purwa_path, "purwa-testing")
+}
+
+/// `purwa-orm` dev-dependency line inner for optional DB integration tests.
+pub fn purwa_orm_dep_toml(purwa_path: Option<&Path>) -> String {
+    sibling_crate_dep(purwa_path, "purwa-orm")
+}
+
+fn sibling_crate_dep(purwa_path: Option<&Path>, crate_dir: &str) -> String {
+    if let Some(p) = purwa_path
+        && let Some(parent) = p.parent()
+    {
+        let path = parent.join(crate_dir);
+        format!(r#"path = "{}""#, path.display())
+    } else {
+        r#"version = "0.1.0""#.to_string()
+    }
+}
+
 /// Kebab-case package name from user input.
 pub fn crate_package_name(raw: &str) -> String {
     raw.trim().to_kebab_case()

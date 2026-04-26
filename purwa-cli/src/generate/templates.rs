@@ -14,8 +14,22 @@ pub struct MakeRequestTpl<'a> {
 pub struct ScaffoldCargoToml<'a> {
     pub crate_name: &'a str,
     pub purwa_dep: &'a str,
+    pub purwa_testing_dep: &'a str,
+    pub purwa_orm_dep: &'a str,
     pub features_csv: &'a str,
     pub inertia: bool,
+}
+
+#[derive(Template)]
+#[template(path = "scaffold/tests/no_db_smoke.rs.txt", escape = "none")]
+pub struct ScaffoldTestNoDb<'a> {
+    pub rust_lib_name: &'a str,
+}
+
+#[derive(Template)]
+#[template(path = "scaffold/tests/postgres_optional.rs.txt", escape = "none")]
+pub struct ScaffoldTestPostgres<'a> {
+    pub rust_lib_name: &'a str,
 }
 
 #[derive(Template)]

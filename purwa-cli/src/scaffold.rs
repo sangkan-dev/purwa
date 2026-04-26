@@ -10,8 +10,9 @@ use crate::cli::NewArgs;
 use crate::frontend::write_frontend_tree;
 use crate::generate::{
     ScaffoldCargoToml, ScaffoldEnvExample, ScaffoldHealth, ScaffoldLibRs, ScaffoldMainRs,
-    ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme, ScaffoldWelcome, crate_package_name,
-    features_csv, purwa_dep_toml, rust_lib_name_from_package,
+    ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme, ScaffoldTestNoDb, ScaffoldTestPostgres,
+    ScaffoldWelcome, crate_package_name, features_csv, purwa_dep_toml, purwa_orm_dep_toml,
+    purwa_testing_dep_toml, rust_lib_name_from_package,
 };
 use crate::util::{GlobalOpts, write_output};
 
@@ -75,6 +76,8 @@ pub fn run_new(
     }
     let features_csv = features_csv(&feats);
     let dep_inner = purwa_dep_toml(purwa_path.as_deref());
+    let purwa_testing_dep = purwa_testing_dep_toml(purwa_path.as_deref());
+    let purwa_orm_dep = purwa_orm_dep_toml(purwa_path.as_deref());
 
     let title = pkg.to_title_case();
     let app_name = lib.clone();
@@ -82,6 +85,8 @@ pub fn run_new(
     let cargo = ScaffoldCargoToml {
         crate_name: &pkg,
         purwa_dep: &dep_inner,
+        purwa_testing_dep: &purwa_testing_dep,
+        purwa_orm_dep: &purwa_orm_dep,
         features_csv: &features_csv,
         inertia,
     }
@@ -128,6 +133,15 @@ pub fn run_new(
         None
     };
 
+    let test_no_db = ScaffoldTestNoDb {
+        rust_lib_name: &lib,
+    }
+    .render()?;
+    let test_postgres = ScaffoldTestPostgres {
+        rust_lib_name: &lib,
+    }
+    .render()?;
+
     let mut paths: Vec<(PathBuf, String)> = vec![
         (root.join("Cargo.toml"), cargo),
         (root.join("src/lib.rs"), lib_rs),
@@ -137,6 +151,8 @@ pub fn run_new(
         (root.join("purwa.toml"), purwa_toml),
         (root.join(".env.example"), env_ex),
         (root.join("README.md"), readme),
+        (root.join("tests/no_db_smoke.rs"), test_no_db),
+        (root.join("tests/postgres_optional.rs"), test_postgres),
     ];
     if let Some(w) = welcome_rs {
         paths.push((root.join("src/routes/welcome.rs"), w));

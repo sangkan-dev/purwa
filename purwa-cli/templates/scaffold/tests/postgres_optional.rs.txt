@@ -1,0 +1,23 @@
+//! Optional DB check: set **`TEST_DATABASE_URL`** to a disposable Postgres, then run:
+//! `cargo test postgres_env_connects -- --ignored`.
+//!
+//! Migrations and fixtures follow the same patterns as **`purwa-orm`** integration tests
+//! (testcontainers or env URL); this file only checks connectivity.
+
+#![forbid(unsafe_code)]
+
+use {{ rust_lib_name }} as _;
+
+#[tokio::test]
+#[ignore = "set TEST_DATABASE_URL, then: cargo test postgres_env_connects -- --ignored"]
+async fn postgres_env_connects() {
+    let Some(url) = purwa_testing::test_database_url_from_env() else {
+        panic!("set TEST_DATABASE_URL to run this test with --ignored");
+    };
+    let pool = purwa_orm::connect_pool(&url).await.expect("connect_pool");
+    let (n,): (i64,) = sqlx::query_as("SELECT 1::bigint")
+        .fetch_one(&pool)
+        .await
+        .expect("SELECT 1");
+    assert_eq!(n, 1);
+}

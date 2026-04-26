@@ -76,9 +76,9 @@ Adding or removing packages should go through the **tooling** so versions, featu
 
 | Layer | Expectation |
 |-------|-------------|
-| **Framework / DB integration** | **Real Postgres** in CI via **testcontainers** (or CI service); exercises migrations and SQLx. |
-| **`purwa-testing` / app tests** | Support tests **without** a running DB (**mock pool** / stub state) per PRD §11. |
-| **Local** | Document **`TEST_DATABASE_URL`** for contributors. |
+| **Framework / DB integration** | **Real Postgres** in CI via **testcontainers** (or CI service); exercises migrations and SQLx (`purwa-orm` tests are the reference). |
+| **`purwa-testing` / app tests** | **No-DB path:** HTTP helpers + `Router<()>` / inventory routes; avoid requiring **`PgPool`** in the same test when you want speed — there is no official lightweight pool mock. **DB path:** **`TEST_DATABASE_URL`** or **`purwa-testing`** feature **`postgres`** (testcontainers helper) + **`purwa_orm::connect_pool`** / **`migrate_*`**; do not duplicate migration logic in `purwa-testing`. |
+| **Local** | Document **`TEST_DATABASE_URL`** for contributors without Docker. |
 
 Do not replace integration tests with mocks only, or vice versa — **both** layers are required.
 

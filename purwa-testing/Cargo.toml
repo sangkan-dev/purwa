@@ -3,6 +3,33 @@ name = "purwa-testing"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Test utilities and fixtures for Purwa apps (stub until Sprint 11)"
+description = "HTTP and optional Postgres test helpers for Purwa apps"
+
+[features]
+default = []
+postgres = [
+    "dep:purwa-orm",
+    "dep:sqlx",
+    "dep:testcontainers",
+    "dep:testcontainers-modules",
+]
 
 [dependencies]
+axum = "0.8"
+bytes = "1"
+http = "1"
+http-body-util = "0.1"
+serde_json = "1"
+tower = { version = "0.5.3", features = ["util"] }
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
+
+purwa-orm = { path = "../purwa-orm", optional = true }
+sqlx = { version = "0.8.6", default-features = false, features = [
+    "runtime-tokio",
+    "postgres",
+    "tls-rustls-ring",
+], optional = true }
+testcontainers = { version = "0.25.0", optional = true }
+testcontainers-modules = { version = "0.13.0", optional = true, features = [
+    "postgres",
+] }

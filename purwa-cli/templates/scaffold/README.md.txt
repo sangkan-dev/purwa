@@ -62,6 +62,12 @@ empu inertia:setup --output frontend
 ```
 {% endif %}
 
+## Tests
+
+- **`tests/no_db_smoke.rs`** — `GET /health` via `purwa_testing` + `router_from_inventory()` (no database).
+- **`tests/postgres_optional.rs`** — ignored by default; set **`TEST_DATABASE_URL`** and run  
+  `cargo test postgres_env_connects -- --ignored` for a real Postgres check. For migrations, follow **`purwa-orm`** patterns (same as Purwa workspace S4 tests).
+
 ## Routes
 
 ```bash

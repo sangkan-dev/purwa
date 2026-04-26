@@ -273,15 +273,15 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Test `Router` builder with overridden state.
-- [ ] **Tanpa DB (PRD §11):** mock `PgPool` / stub repository atau helper yang membuat tes handler tidak wajib menjalankan Postgres.
-- [ ] **Dengan DB:** arahkan contoh integration test aplikasi ke pola yang sama S4 (testcontainers atau `TEST_DATABASE_URL`); jangan duplikasi logic — satu sumber kebenaran di docs.
-- [ ] Example `tests/` in template repo (satu contoh no-DB + satu opsional with-DB).
+- [ ] Test `Router` builder with overridden state (deferred: inventory router remains `Router<()`>; composition with `State<AppState>` is app-level — see README routing note).
+- [x] **Tanpa DB (PRD §11):** mock `PgPool` / stub repository atau helper yang membuat tes handler tidak wajib menjalankan Postgres.
+- [x] **Dengan DB:** arahkan contoh integration test aplikasi ke pola yang sama S4 (testcontainers atau `TEST_DATABASE_URL`); jangan duplikasi logic — satu sumber kebenaran di docs.
+- [x] Example `tests/` in template repo (satu contoh no-DB + satu opsional with-DB).
 
 ### Done when
 
-- [ ] PRD §11: mock pool / no-DB test path documented and working.
-- [ ] Dokumentasi menjelaskan kapan pakai mock vs Postgres sungguhan (selaras § Resolved decisions Q4).
+- [x] PRD §11: mock pool / no-DB test path documented and working.
+- [x] Dokumentasi menjelaskan kapan pakai mock vs Postgres sungguhan (selaras § Resolved decisions Q4).
 
 ---
 
@@ -338,6 +338,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed stubs |
 | 2026-04-26 | Sprint 9: `frontend/` Vite+Svelte+Inertia template, `empu inertia:setup`, `purwa-inertia` HTML shell injection + `vite_manifest`, scaffold `Welcome` + `ServeDir`, `empu build` manifest → `[inertia].asset_version`, `purwa` flattens `purwa-inertia` exports |
 | 2026-04-26 | Sprint 10: extended `PurwaError` (401/403/404/DB/internal), `respond_purwa_error` + `Error.svelte`, `CurrentUser` → `PurwaError`, `init_tracing` / JSON prod, integration tests |
+| 2026-04-26 | Sprint 11: `purwa-testing` HTTP helpers + optional `postgres` (testcontainers), `TEST_DATABASE_URL` helper; `empu new` test templates; README/AGENT Q4 |
 
 ---
 

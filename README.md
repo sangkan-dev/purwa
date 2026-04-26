@@ -20,7 +20,12 @@ Settings load from optional **`purwa.toml`** in the working directory and from e
 
 **Database URL:** set `[database].url` in `purwa.toml`, or `PURWA_DATABASE__URL`, or `DATABASE_URL`. Use this for [`PgPool`](https://docs.rs/sqlx/latest/sqlx/type.PgPool.html), [`AppState`](purwa-core/src/lib.rs), and `empu migrate` (Sprint 4).
 
-**Integration tests:** framework crates use **testcontainers** where noted (requires Docker). To run Postgres-backed tests against a fixed instance instead, set **`TEST_DATABASE_URL`** to a disposable database (see [.env.example](./.env.example)). Example migration files: [purwa-orm/tests/fixtures/migrations](./purwa-orm/tests/fixtures/migrations) (copy into your app’s `database/migrations`).
+**Integration tests (TASK Q4 — two layers):**
+
+1. **Without Postgres:** exercise handlers and routing only. Use **[`purwa-testing`](purwa-testing/src/lib.rs)** (`oneshot`, `oneshot_status`, `json_body`, …) with [`router_from_inventory`](purwa-core/src/routing.rs) or a manual `Router<()>`. There is no lightweight mock for `sqlx::PgPool`; keep fast tests free of a real pool (route-only / stub `Extension` types), or use layer (2).
+2. **With Postgres:** framework crates (e.g. **`purwa-orm`**) use **testcontainers** where noted (requires Docker). For a fixed instance instead, set **`TEST_DATABASE_URL`** to a disposable database (see [.env.example](./.env.example)). Example migration files: [purwa-orm/tests/fixtures/migrations](./purwa-orm/tests/fixtures/migrations) (copy into your app’s `database/migrations`). Optional: enable **`purwa-testing`** feature **`postgres`** for [`with_testcontainer_postgres`](purwa-testing/src/postgres.rs) — still use **`purwa_orm::connect_pool`** / **`migrate_*`** as the single source of truth for migrations (see [purwa-orm/tests/migrate_integration.rs](./purwa-orm/tests/migrate_integration.rs)).
+
+Scaffolded apps from **`empu new`** include `tests/no_db_smoke.rs` and an ignored `tests/postgres_optional.rs` demonstrating both paths.
 
 Merging **inventory-based routes** ([`router_from_inventory`](purwa-core/src/routing.rs)) with a router that uses **`AppState`** (typed `Router<AppState>`) is a composition detail for your `main` (Sprint 4+ may refine helpers); handlers that need config should use `State<Arc<AppConfig>>` with [`AppState`](purwa-core/src/lib.rs) and Axum `FromRef`.
 
