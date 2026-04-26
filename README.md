@@ -6,9 +6,14 @@ Purwa is an opinionated Rust web framework from **Sangkan**: Laravel-class devel
 
 ## Documentation
 
+- [Getting started](./docs/getting-started.md) — ~15 minute first run (`empu new`, `cargo run`, `/health`)
+- [Architecture](./docs/architecture.md) — crates, request flow, config, SQLx vs SeaORM
+- [Escape hatches](./docs/escape-hatches.md) — raw Axum/Tower, `Router` + state, SQLx
+- [MVP checklist](./docs/mvp-checklist.md) — PRD §11 verification pointers
 - [PRD.md](./PRD.md) — product requirements and architecture
 - [TASK.md](./TASK.md) — sprint plan and acceptance criteria
 - [AGENT.md](./AGENT.md) — guidelines for contributors and AI agents
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — build, test, PR expectations
 
 ## Supported platforms
 
@@ -53,9 +58,23 @@ Enable the adapter with **`purwa = { path = "...", features = ["inertia"] }`**. 
 
 Purwa registers HTTP handlers with the [`inventory`](https://docs.rs/inventory) crate (linker sections). That mechanism is **not supported on `wasm32` targets**; use Purwa on native server/desktop targets only for macro-based routing.
 
-## Philosophy (summary)
+## Philosophy
 
-*Purwa* (Javanese: beginning / origin) and *Empu* (master forger) express the goal: start from sound architecture and ship durable software. A fuller bilingual note will land with the MVP docs (Sprint 12).
+### English
+
+**Purwa** — *the fundamental Rust web framework. Forged by Empu.*
+
+In Javanese cosmology, *Purwa* is the first movement of the **Purwa–Madya–Wasana** cycle: the **beginning**, the right place to start. **Sangkan** (the source) names the organization behind the project. **Empu** is the master smith who tempers raw iron into a *pusaka* — something built to last. The CLI **Empu** is that forge for your app: conventions, generators, and Laravel-class productivity on **Axum** and **Tower**, without hiding the platform when you need it.
+
+The north star: a developer comfortable with **Laravel** should feel productive in **under one day**; the stack stays **idiomatic Rust** (memory safety, async on **Tokio**, escape hatches to Axum and SQLx).
+
+### Bahasa Indonesia
+
+**Purwa** — *kerangka kerja web Rust fundamental. Ditempa oleh Empu.*
+
+Dalam kosmologi Jawa, *Purwa* adalah fase pertama **Purwa–Madya–Wasana**: **permulaan**, titik awal yang benar. **Sangkan** adalah sang sumber — organisasi yang membawa visi ini. **Empu** adalah pandai besi agung yang menempa besi menjadi **pusaka**, perangkat lunak yang tahan lama. CLI **Empu** adalah palu dan dapur tempa untuk aplikasi Anda: konvensi, *scaffolding*, dan pengalaman mirip **Laravel** di atas **Axum** dan **Tower**, tanpa menutup akses ke lapisan bawah ketika Anda membutuhkannya.
+
+Bintang utara: pengembang yang nyaman dengan **Laravel** produktif dalam **kurang dari satu hari**; tetap **Rust yang idiomatis** — aman memori, async **Tokio**, dan jalan keluar ke Axum serta SQLx.
 
 ## License
 

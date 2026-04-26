@@ -10,6 +10,8 @@ This repository is **Purwa**: an opinionated Rust web framework (Sangkan) with *
 |----------|-----|
 | [PRD.md](./PRD.md) | Product scope, architecture, stack, non-goals, Definition of Done (MVP). |
 | [TASK.md](./TASK.md) | Sprint order (S1–S12), acceptance criteria, resolved decisions (license, crates.io, `#[resource]`, testing). |
+| [docs/getting-started.md](./docs/getting-started.md), [docs/architecture.md](./docs/architecture.md), [docs/escape-hatches.md](./docs/escape-hatches.md) | User-facing quickstart, architecture, escape hatches. |
+| [CONTRIBUTING.md](./CONTRIBUTING.md), [RELEASING.md](./RELEASING.md), [docs/mvp-checklist.md](./docs/mvp-checklist.md) | Contributor workflow, crates.io train, PRD §11 evidence + security sign-off. |
 
 **Do not** expand scope into PRD **§3.2 Non-Goals** or **§7.2 Post-MVP** unless the user explicitly updates the PRD/TASK.
 

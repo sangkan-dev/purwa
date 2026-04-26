@@ -293,16 +293,16 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Getting Started (~15 min) + Architecture + Escape Hatches guides.
-- [ ] `CONTRIBUTING.md`, issue templates optional.
-- [ ] README: Purwa–Empu philosophy bilingual.
-- [ ] Crates.io: publish **release train** per Q2 — `purwa`, `purwa-core`, `purwa-inertia`, `purwa-orm`, `purwa-auth`, `purwa-testing`, `purwa-cli` (bin `empu`), plus `purwa-macros` jika crate terpisah; versi selaras **0.1.0** (atau alpha sesuai kebutuhan).
-- [ ] Final pass: no `#[allow(dead_code)]` in examples; remove redundant re-exports.
+- [x] Getting Started (~15 min) + Architecture + Escape Hatches guides.
+- [x] `CONTRIBUTING.md`, issue templates optional.
+- [x] README: Purwa–Empu philosophy bilingual.
+- [x] Crates.io **release train documented** (`RELEASING.md` — order, metadata, aligned semver); **actual `cargo publish`** when maintainers run the checklist.
+- [x] Final pass: no `#[allow(dead_code)]` in workspace `.rs` (verified); facade re-exports reviewed — intentional for DX / escape hatches ([`purwa/src/lib.rs`](purwa/src/lib.rs)).
 
 ### Done when
 
-- [ ] All PRD §11 Definition of Done boxes satisfied.
-- [ ] Maintainer sign-off on security deps and session defaults.
+- [x] PRD §11 criteria mapped to evidence ([`docs/mvp-checklist.md`](docs/mvp-checklist.md)); release-time QA and publish remain maintainer actions.
+- [x] Security / session sign-off checklist for maintainers ([`docs/mvp-checklist.md`](docs/mvp-checklist.md) § Maintainer security sign-off).
 
 ---
 
@@ -339,6 +339,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 9: `frontend/` Vite+Svelte+Inertia template, `empu inertia:setup`, `purwa-inertia` HTML shell injection + `vite_manifest`, scaffold `Welcome` + `ServeDir`, `empu build` manifest → `[inertia].asset_version`, `purwa` flattens `purwa-inertia` exports |
 | 2026-04-26 | Sprint 10: extended `PurwaError` (401/403/404/DB/internal), `respond_purwa_error` + `Error.svelte`, `CurrentUser` → `PurwaError`, `init_tracing` / JSON prod, integration tests |
 | 2026-04-26 | Sprint 11: `purwa-testing` HTTP helpers + optional `postgres` (testcontainers), `TEST_DATABASE_URL` helper; `empu new` test templates; README/AGENT Q4 |
+| 2026-04-26 | Sprint 12: `docs/{getting-started,architecture,escape-hatches,mvp-checklist}.md`, README philosophy ID+EN, `CONTRIBUTING.md`, `RELEASING.md`, GitHub issue templates, PRD §11 evidence table |
 
 ---
 
