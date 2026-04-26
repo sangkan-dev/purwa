@@ -28,6 +28,9 @@ jobs:
       - name: Clippy
         run: cargo clippy --workspace -- -D warnings
 
+      - name: Clippy (purwa with `auth`)
+        run: cargo clippy -p purwa --features auth -- -D warnings
+
       # `purwa-orm` integration tests use testcontainers (Docker on the runner).
       - name: Test
         run: cargo test --workspace

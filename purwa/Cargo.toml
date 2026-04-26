@@ -7,12 +7,14 @@ description = "The fundamental Rust web framework — facade re-exports"
 
 [features]
 default = []
+auth = ["dep:purwa-auth"]
 inertia = ["dep:purwa-inertia"]
 sea-orm = ["dep:purwa-orm", "purwa-orm/sea-orm"]
 
 [dependencies]
 axum = "0.8"
 inventory = "0.3.24"
+purwa-auth = { path = "../purwa-auth", optional = true }
 purwa-core = { path = "../purwa-core" }
 purwa-inertia = { path = "../purwa-inertia", optional = true }
 purwa-macros = { version = "0.1.0", path = "../purwa-macros" }

@@ -2,9 +2,73 @@
 
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
+use syn::parse::{Parse, ParseStream};
 use syn::parse_macro_input;
 use syn::spanned::Spanned;
-use syn::{Attribute, Ident, ItemFn, ItemMod, LitStr};
+use syn::{Attribute, Ident, ItemFn, ItemMod, LitStr, Type};
+
+/// `#[auth(Backend)]` — require a logged-in session for handlers with **no** parameters.
+///
+/// Redirects to `/login` when unauthenticated. For handlers that need extractors, use
+/// [`purwa_auth::CurrentUser`] or [`purwa::auth::CurrentUser`] with the `auth` feature, or add
+/// [`purwa::auth::AuthSession`] manually.
+///
+/// **Requires** crate feature `purwa/auth`.
+#[proc_macro_attribute]
+pub fn auth(args: TokenStream, input: TokenStream) -> TokenStream {
+    auth_impl(args, input)
+}
+
+fn auth_impl(args: TokenStream, input: TokenStream) -> TokenStream {
+    struct AuthArgs {
+        backend: Type,
+    }
+
+    impl Parse for AuthArgs {
+        fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+            Ok(AuthArgs {
+                backend: input.parse()?,
+            })
+        }
+    }
+
+    let AuthArgs { backend } = parse_macro_input!(args as AuthArgs);
+    let mut input_fn = parse_macro_input!(input as ItemFn);
+
+    if !input_fn.sig.inputs.is_empty() {
+        return syn::Error::new(
+            input_fn.sig.inputs.span(),
+            "#[auth(Backend)] only supports handlers with no parameters; use CurrentUser<Backend> or AuthSession<Backend>",
+        )
+        .to_compile_error()
+        .into();
+    }
+
+    input_fn.sig.output = syn::parse_quote! {
+        -> impl ::purwa::axum::response::IntoResponse
+    };
+
+    let param: syn::FnArg = syn::parse_quote! {
+        mut auth_session: ::purwa::auth::AuthSession<#backend>
+    };
+    input_fn.sig.inputs.insert(0, param);
+
+    let stmts = &input_fn.block.stmts;
+    input_fn.block = syn::parse_quote! {
+        {
+            use ::purwa::axum::response::IntoResponse;
+            if auth_session.user.is_none() {
+                return ::purwa::axum::response::Redirect::temporary("/login").into_response();
+            }
+            let __purwa_body = {
+                #(#stmts)*
+            };
+            __purwa_body.into_response()
+        }
+    };
+
+    quote! { #input_fn }.into()
+}
 
 /// `#[get("/path")] async fn name(...) -> ...`
 #[proc_macro_attribute]

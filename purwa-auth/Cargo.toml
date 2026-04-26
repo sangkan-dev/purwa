@@ -3,6 +3,37 @@ name = "purwa-auth"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
-description = "Session and token authentication for Purwa (stub until Sprint 7)"
+description = "Session and token authentication for Purwa — tower-sessions, axum-login, Argon2id"
+
+[features]
+default = []
+# Postgres-backed `AuthnBackend` for email/password login (SQLx).
+postgres = ["dep:sqlx"]
 
 [dependencies]
+argon2 = { version = "0.5.3", features = ["std"] }
+axum = "0.8"
+axum-login = "0.18.0"
+password-hash = "0.5.0"
+rand_core = { version = "0.6.4", features = ["std"] }
+serde = { version = "1.0.228", features = ["derive"] }
+thiserror = "2.0.18"
+# Must match `axum-login` (0.18 → tower-sessions 0.14).
+tower-sessions = { version = "0.14.0", default-features = false, features = [
+    "memory-store",
+] }
+
+# Optional: reference backend for generated apps and integration tests.
+sqlx = { version = "0.8.6", default-features = false, features = [
+    "runtime-tokio",
+    "postgres",
+    "macros",
+    "tls-rustls-ring",
+], optional = true }
+
+[dev-dependencies]
+axum = "0.8"
+http-body-util = "0.1"
+serde = { version = "1.0.228", features = ["derive"] }
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
+tower = { version = "0.5.3", features = ["util"] }

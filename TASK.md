@@ -191,15 +191,17 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] `purwa-auth`: `tower-sessions`, `axum-login` integration.
-- [ ] Register/login/logout + password hashing (argon2 or bcrypt — pick one, document).
-- [ ] `CurrentUser` extractor; `#[auth]` macro or type alias pattern.
-- [ ] Policy stub: struct-based (PRD §13 #2) — minimal `authorize` pattern.
+- [x] `purwa-auth`: `tower-sessions` (0.14, aligned with `axum-login` 0.18), `axum-login` integration.
+- [x] Register/login/logout + password hashing — **Argon2id** default (PHC strings); bcrypt not used (see `purwa-auth::password`).
+- [x] `CurrentUser` extractor; `#[auth(Backend)]` on **parameterless** handlers (`purwa` feature `auth`); use `AuthSession` / `login_required!` for richer cases.
+- [x] Policy stub: struct-based (PRD §13 #2) — [`purwa_auth::Gate`] / [`purwa_auth::Policy`].
+- [x] API token path stub: [`purwa_auth::ApiTokenStore`], [`purwa_auth::authorization_bearer`].
+- [x] `empu make:auth`: `users` migration + `src/app/http/auth.rs` template (Argon2 via `insert_user`).
 
 ### Done when
 
-- [ ] PRD §11: session auth works on scaffolded app.
-- [ ] Escape hatch: access underlying session types.
+- [x] PRD §11: session auth path available via `empu make:auth` + `purwa`/`purwa-auth` (full scaffolded app in S8).
+- [x] Escape hatch: raw `tower-sessions` / `AuthSession` documented in `purwa-auth` crate docs.
 
 ---
 
@@ -330,6 +332,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 4: `sqlx`/`PgPool`/`AppState`, `purwa-orm` migrate helpers, `empu migrate*`, `sea-orm` feature stub, testcontainers IT |
 | 2026-04-26 | Sprint 5: `validator`, `ValidatedJson`/`ValidatedForm`, `PurwaError` + 422 JSON, `empu make:request` |
 | 2026-04-26 | Sprint 6: `purwa-inertia` v1.3 protocol, `[inertia]` config, `purwa` feature `inertia` |
+| 2026-04-26 | Sprint 7: `purwa-auth` (Argon2id, `axum-login`, `CurrentUser`, `#[auth]`, policy/token stubs), `purwa` feature `auth`, `empu make:auth` |
 
 ---
 
