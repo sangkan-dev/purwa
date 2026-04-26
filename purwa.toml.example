@@ -1,0 +1,9 @@
+# Copy to `purwa.toml` in your project root (see PRD §6).
+# Env overrides: prefix `PURWA`, nested keys use `__` (e.g. `PURWA_SERVER__PORT=8080`).
+
+[app]
+name = "my-purwa-app"
+
+[server]
+host = "0.0.0.0"
+port = 3000

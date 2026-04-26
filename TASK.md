@@ -112,15 +112,15 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Parse `purwa.toml` + merge with `config` crate / env overrides.
-- [ ] `AppState` template: `PgPool` placeholder or trait for later S4, `Arc` usage, no globals.
-- [ ] `FromRef` / `State` examples for sub-state slices if needed.
-- [ ] `.env.example` in scaffold (scaffold itself refined in S8).
+- [x] Parse `purwa.toml` + merge with `config` crate / env overrides.
+- [x] `AppState` template: `PgPool` placeholder or trait for later S4, `Arc` usage, no globals.
+- [x] `FromRef` / `State` examples for sub-state slices if needed.
+- [x] `.env.example` in scaffold (scaffold itself refined in S8).
 
 ### Done when
 
-- [ ] Example app reads a config key in a handler test.
-- [ ] PRD §5.3 constraints: no `lazy_static` in user-facing examples.
+- [x] Example app reads a config key in a handler test.
+- [x] PRD §5.3 constraints: no `lazy_static` in user-facing examples.
 
 ---
 
@@ -326,6 +326,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | AGENT.md, AGENTS.md, `.cursor/rules/` added; TASK links agents |
 | 2026-04-26 | Sprint 1: Cargo workspace, stubs, `purwa-core` Axum hello, MIT, README, CI |
 | 2026-04-26 | Sprint 2: `purwa-macros`, `inventory` routing, `#[resource]`, `format_route_table`, `empu route:list` stub; full CLI deferred S8 |
+| 2026-04-26 | Sprint 3: `AppConfig`/`AppState`, dotenvy+config, `purwa.toml.example`, `.env.example`, config integration test |
 
 ---
 
