@@ -1,0 +1,10 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Local env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

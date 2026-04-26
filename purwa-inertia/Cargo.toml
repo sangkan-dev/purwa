@@ -1,0 +1,8 @@
+[package]
+name = "purwa-inertia"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "First-party Inertia.js adapter for Purwa (stub until Sprint 6)"
+
+[dependencies]

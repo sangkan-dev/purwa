@@ -1,0 +1,9 @@
+[package]
+name = "purwa"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "The fundamental Rust web framework — facade re-exports"
+
+[dependencies]
+purwa-core = { path = "../purwa-core" }

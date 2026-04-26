@@ -1,0 +1,8 @@
+[package]
+name = "purwa-testing"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Test utilities and fixtures for Purwa apps (stub until Sprint 11)"
+
+[dependencies]
