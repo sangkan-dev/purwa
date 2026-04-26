@@ -91,16 +91,16 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Proc-macro crate (e.g. `purwa-macros` or under `purwa-core`) using `syn 2`, `quote`, `proc-macro2`.
-- [ ] Integrate `inventory` for handler registration; document WASM limitation (PRD §10).
-- [ ] `router!()` / startup collector merges registered routes into Axum `Router`.
-- [ ] **`#[resource]` — MVP penuh:** macro menghasilkan set route REST (index, create, store, show, edit, update, destroy) + nama handler konsisten; selaras PRD §7.1 dan DoD CRUD &lt; 2 jam.
-- [ ] `empu route:list`: pretty table (method, path, handler name) **or** CLI placeholder + library API that returns structured list (finish in S8 if split).
+- [x] Proc-macro crate (e.g. `purwa-macros` or under `purwa-core`) using `syn 2`, `quote`, `proc-macro2`.
+- [x] Integrate `inventory` for handler registration; document WASM limitation (PRD §10).
+- [x] `router!()` / startup collector merges registered routes into Axum `Router`.
+- [x] **`#[resource]` — MVP penuh:** macro menghasilkan set route REST (index, create, store, show, edit, update, destroy) + nama handler konsisten; selaras PRD §7.1 dan DoD CRUD &lt; 2 jam.
+- [x] `empu route:list`: pretty table (method, path, handler name) **or** CLI placeholder + library API that returns structured list (finish in S8 if split).
 
 ### Done when
 
-- [ ] At least two handlers in a test app register without manual `Router` wiring.
-- [ ] PRD §11: `empu route:list` criterion satisfied **or** explicitly split with acceptance in S8 checklist.
+- [x] At least two handlers in a test app register without manual `Router` wiring.
+- [x] PRD §11: `empu route:list` criterion satisfied **or** explicitly split with acceptance in S8 checklist.
 
 ---
 
@@ -214,7 +214,7 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 - [ ] `clap` + `inquire` for `empu new` wizard.
 - [ ] Codegen with `askama` templates; verbose/`--dry-run` where useful.
 - [ ] `empu serve`, `empu dev` (cargo-watch), `empu build` (Rust + Vite).
-- [ ] Complete `route:list` if not finished in S2.
+- [ ] **`empu route:list` (full PRD §11):** run the application binary (e.g. `cargo run -- …`) or a dedicated `main` subcommand so the process **links** route `inventory`, then print `purwa::format_route_table()` (or stream JSON). Sprint 2 shipped `format_route_table` / `route_descriptors` + CLI stub only.
 
 ### Done when
 
@@ -325,6 +325,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | crates.io: `purwa` name availability confirmed |
 | 2026-04-26 | AGENT.md, AGENTS.md, `.cursor/rules/` added; TASK links agents |
 | 2026-04-26 | Sprint 1: Cargo workspace, stubs, `purwa-core` Axum hello, MIT, README, CI |
+| 2026-04-26 | Sprint 2: `purwa-macros`, `inventory` routing, `#[resource]`, `format_route_table`, `empu route:list` stub; full CLI deferred S8 |
 
 ---
 

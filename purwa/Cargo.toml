@@ -6,4 +6,11 @@ license.workspace = true
 description = "The fundamental Rust web framework — facade re-exports"
 
 [dependencies]
+axum = "0.8"
+inventory = "0.3.24"
 purwa-core = { path = "../purwa-core" }
+purwa-macros = { version = "0.1.0", path = "../purwa-macros" }
+
+[dev-dependencies]
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
+tower = { version = "0.5.3", features = ["util"] }
