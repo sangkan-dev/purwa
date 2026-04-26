@@ -340,6 +340,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 10: extended `PurwaError` (401/403/404/DB/internal), `respond_purwa_error` + `Error.svelte`, `CurrentUser` → `PurwaError`, `init_tracing` / JSON prod, integration tests |
 | 2026-04-26 | Sprint 11: `purwa-testing` HTTP helpers + optional `postgres` (testcontainers), `TEST_DATABASE_URL` helper; `empu new` test templates; README/AGENT Q4 |
 | 2026-04-26 | Sprint 12: `docs/{getting-started,architecture,escape-hatches,mvp-checklist}.md`, README philosophy ID+EN, `CONTRIBUTING.md`, `RELEASING.md`, GitHub issue templates, PRD §11 evidence table |
+| 2026-04-26 | crates.io: workspace `repository`/`readme` inheritance, `version = 0.1.0` on internal deps, per-crate docs.rs + keywords; `RELEASING.md` v0.1.0 publish order |
 
 ---
 

@@ -3,7 +3,13 @@ name = "purwa"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation = "https://docs.rs/purwa"
 description = "The fundamental Rust web framework — facade re-exports"
+keywords = ["purwa", "web", "framework", "axum", "inertia", "empu"]
+categories = ["web-programming", "asynchronous"]
 
 [features]
 default = []
@@ -14,11 +20,11 @@ sea-orm = ["dep:purwa-orm", "purwa-orm/sea-orm"]
 [dependencies]
 axum = "0.8"
 inventory = "0.3.24"
-purwa-auth = { path = "../purwa-auth", optional = true }
-purwa-core = { path = "../purwa-core" }
-purwa-inertia = { path = "../purwa-inertia", optional = true }
+purwa-auth = { version = "0.1.0", path = "../purwa-auth", optional = true }
+purwa-core = { version = "0.1.0", path = "../purwa-core" }
+purwa-inertia = { version = "0.1.0", path = "../purwa-inertia", optional = true }
 purwa-macros = { version = "0.1.0", path = "../purwa-macros" }
-purwa-orm = { path = "../purwa-orm", optional = true }
+purwa-orm = { version = "0.1.0", path = "../purwa-orm", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }

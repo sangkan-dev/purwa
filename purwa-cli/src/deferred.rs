@@ -5,5 +5,5 @@ pub fn print_deferred(cmd: &str) {
     eprintln!(
         "Tracked under Purwa Sprint roadmap (TASK.md): seeders, policies, `db:seed`, full `inertia:setup`."
     );
-    eprintln!("Repository: https://github.com/sangkan/purwa (file issues for prioritization).");
+    eprintln!("Repository: https://github.com/sangkan-dev/purwa (file issues for prioritization).");
 }

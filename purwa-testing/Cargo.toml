@@ -3,7 +3,13 @@ name = "purwa-testing"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation = "https://docs.rs/purwa-testing"
 description = "HTTP and optional Postgres test helpers for Purwa apps"
+keywords = ["purwa", "testing", "axum", "http"]
+categories = ["development-tools", "web-programming"]
 
 [features]
 default = []
@@ -23,7 +29,7 @@ serde_json = "1"
 tower = { version = "0.5.3", features = ["util"] }
 tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
 
-purwa-orm = { path = "../purwa-orm", optional = true }
+purwa-orm = { version = "0.1.0", path = "../purwa-orm", optional = true }
 sqlx = { version = "0.8.6", default-features = false, features = [
     "runtime-tokio",
     "postgres",

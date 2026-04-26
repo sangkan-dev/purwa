@@ -10,7 +10,13 @@ This guide assumes **Linux** or **macOS** (see [README](../README.md) — Window
 
 ## Install Empu (CLI)
 
-From a clone of the Purwa workspace:
+**From crates.io** (after **v0.1.0** is published):
+
+```bash
+cargo install purwa-cli
+```
+
+**From a clone** of the Purwa workspace:
 
 ```bash
 cargo install --path purwa-cli
@@ -22,7 +28,7 @@ Verify:
 empu --help
 ```
 
-When crates are published, you will be able to use `cargo install purwa-cli` instead (binary name remains **`empu`**).
+The binary name is always **`empu`** (package name on crates.io is **`purwa-cli`**).
 
 ## Create a project
 

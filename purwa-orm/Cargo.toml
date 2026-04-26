@@ -3,14 +3,20 @@ name = "purwa-orm"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation = "https://docs.rs/purwa-orm"
 description = "SQLx migrations and pool helpers for Purwa; optional SeaORM bridge"
+keywords = ["purwa", "sqlx", "postgres", "migrations"]
+categories = ["database", "web-programming"]
 
 [features]
 default = []
 sea-orm = ["dep:sea-orm"]
 
 [dependencies]
-purwa-core = { path = "../purwa-core" }
+purwa-core = { version = "0.1.0", path = "../purwa-core" }
 sea-orm = { version = "1.1", optional = true, default-features = false, features = [
     "runtime-tokio-rustls",
     "sqlx-postgres",

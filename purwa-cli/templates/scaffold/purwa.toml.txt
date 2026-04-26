@@ -1,4 +1,4 @@
-# {{ title }} — Purwa config (see https://github.com/sangkan/purwa purwa.toml.example)
+# {{ title }} — Purwa config (see https://github.com/sangkan-dev/purwa purwa.toml.example)
 
 [app]
 name = "{{ app_name }}"

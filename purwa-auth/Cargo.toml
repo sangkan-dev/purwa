@@ -3,7 +3,13 @@ name = "purwa-auth"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation = "https://docs.rs/purwa-auth"
 description = "Session and token authentication for Purwa — tower-sessions, axum-login, Argon2id"
+keywords = ["purwa", "auth", "axum", "sessions"]
+categories = ["web-programming", "authentication"]
 
 [features]
 default = []
@@ -13,7 +19,7 @@ postgres = ["dep:sqlx"]
 [dependencies]
 argon2 = { version = "0.5.3", features = ["std"] }
 axum = "0.8"
-purwa-core = { path = "../purwa-core" }
+purwa-core = { version = "0.1.0", path = "../purwa-core" }
 axum-login = "0.18.0"
 password-hash = "0.5.0"
 rand_core = { version = "0.6.4", features = ["std"] }

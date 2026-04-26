@@ -3,11 +3,17 @@ name = "purwa-inertia"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation = "https://docs.rs/purwa-inertia"
 description = "First-party Inertia.js protocol adapter for Purwa (v1.3)"
+keywords = ["purwa", "inertia", "axum", "svelte"]
+categories = ["web-programming"]
 
 [dependencies]
 axum = "0.8"
-purwa-core = { path = "../purwa-core" }
+purwa-core = { version = "0.1.0", path = "../purwa-core" }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 tower = "0.5.3"
