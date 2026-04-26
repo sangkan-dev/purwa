@@ -11,3 +11,7 @@ port = 3000
 # Optional: Postgres URL (overridable with PURWA_DATABASE__URL or DATABASE_URL)
 # [database]
 # url = "postgres://postgres:postgres@127.0.0.1:5432/myapp"
+
+# Inertia.js asset version (override: PURWA_INERTIA__ASSET_VERSION)
+# [inertia]
+# asset_version = "abc123"

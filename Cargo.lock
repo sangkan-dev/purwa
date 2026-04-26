@@ -2044,6 +2044,7 @@ dependencies = [
  "axum",
  "inventory",
  "purwa-core",
+ "purwa-inertia",
  "purwa-macros",
  "purwa-orm",
  "tokio",
@@ -2086,6 +2087,14 @@ dependencies = [
 [[package]]
 name = "purwa-inertia"
 version = "0.1.0"
+dependencies = [
+ "axum",
+ "purwa-core",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tower",
+]
 
 [[package]]
 name = "purwa-macros"

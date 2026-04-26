@@ -7,7 +7,7 @@
 //!    (e.g. `PURWA_SERVER__PORT=8080`, `PURWA_DATABASE__URL=postgres://...`).
 //!
 //! After load, [`AppConfig::database_url`] also checks `DATABASE_URL` (no prefix) when
-//! `[database].url` is unset.
+//! `[database].url` is unset. Inertia asset versioning uses [`InertiaSection`] / `PURWA_INERTIA__*`.
 //!
 //! `dotenvy::dotenv()` runs from [`AppConfig::load`] / [`AppConfig::load_with_file`] so a project
 //! `.env` is loaded when present (missing file is ignored).
@@ -72,6 +72,22 @@ pub struct DatabaseSection {
     pub url: Option<String>,
 }
 
+/// Top-level `[inertia]` section — asset versioning for Inertia.js (Sprint 6).
+#[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
+pub struct InertiaSection {
+    /// Bumped when frontend assets change; compared to `X-Inertia-Version` on Inertia requests.
+    pub asset_version: String,
+}
+
+impl Default for InertiaSection {
+    fn default() -> Self {
+        Self {
+            asset_version: "1".to_string(),
+        }
+    }
+}
+
 /// Framework configuration: `purwa.toml` + env (`PURWA_*`).
 #[derive(Debug, Clone, Default, Deserialize)]
 #[serde(default)]
@@ -79,6 +95,7 @@ pub struct AppConfig {
     pub app: AppSection,
     pub server: ServerSection,
     pub database: DatabaseSection,
+    pub inertia: InertiaSection,
 }
 
 impl AppConfig {

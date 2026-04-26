@@ -13,7 +13,9 @@ use std::sync::Arc;
 use axum::extract::FromRef;
 use axum::{Router, routing::get};
 
-pub use config::{AppConfig, AppSection, DatabaseSection, PurwaConfigError, ServerSection};
+pub use config::{
+    AppConfig, AppSection, DatabaseSection, InertiaSection, PurwaConfigError, ServerSection,
+};
 pub use error::{PurwaError, ValidationErrorBody, flatten_validation_errors};
 pub use extract::{ValidatedForm, ValidatedJson};
 pub use routing::{

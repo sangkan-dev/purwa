@@ -171,15 +171,15 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] `X-Inertia` detection; `Inertia::render()` with serde props.
-- [ ] `X-Inertia-Partial-Data` handling (PRD §11).
-- [ ] Shared props middleware; asset version string from config.
-- [ ] SSR fallback story: document MVP behavior (full page vs minimal).
+- [x] `X-Inertia` detection; `Inertia::render()` with serde props.
+- [x] `X-Inertia-Partial-Data` handling (PRD §11).
+- [x] Shared props middleware; asset version string from config.
+- [x] SSR fallback story: document MVP behavior (full page vs minimal).
 
 ### Done when
 
-- [ ] Manual or automated test proves partial reload path.
-- [ ] No dependency on unmaintained third-party Inertia crates for core path.
+- [x] Manual or automated test proves partial reload path.
+- [x] No dependency on unmaintained third-party Inertia crates for core path.
 
 ---
 
@@ -329,6 +329,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 3: `AppConfig`/`AppState`, dotenvy+config, `purwa.toml.example`, `.env.example`, config integration test |
 | 2026-04-26 | Sprint 4: `sqlx`/`PgPool`/`AppState`, `purwa-orm` migrate helpers, `empu migrate*`, `sea-orm` feature stub, testcontainers IT |
 | 2026-04-26 | Sprint 5: `validator`, `ValidatedJson`/`ValidatedForm`, `PurwaError` + 422 JSON, `empu make:request` |
+| 2026-04-26 | Sprint 6: `purwa-inertia` v1.3 protocol, `[inertia]` config, `purwa` feature `inertia` |
 
 ---
 
