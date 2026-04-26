@@ -1,0 +1,8 @@
+# {{ title }} — Purwa config (see https://github.com/sangkan/purwa purwa.toml.example)
+
+[app]
+name = "{{ app_name }}"
+
+[server]
+host = "0.0.0.0"
+port = {{ port }}

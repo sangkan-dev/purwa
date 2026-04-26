@@ -1,0 +1,7 @@
+//! {{ title }} — application library (routes register via `inventory`).
+
+#![forbid(unsafe_code)]
+
+pub mod routes {
+    pub mod health;
+}

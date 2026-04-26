@@ -1,0 +1,17 @@
+//! {{ title }} — HTTP server entrypoint.
+
+use std::net::SocketAddr;
+
+use {{ rust_lib_name }} as _;
+use purwa::router_from_inventory;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    dotenvy::dotenv().ok();
+    let app = router_from_inventory();
+    let addr = SocketAddr::from(([0, 0, 0, 0], {{ port }}));
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    eprintln!("listening on http://{}", listener.local_addr()?);
+    axum::serve(listener, app).await?;
+    Ok(())
+}

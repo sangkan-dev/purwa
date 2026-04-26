@@ -1,0 +1,33 @@
+//! Prints the route table for `empu route:list` (links the app library so `inventory` runs).
+
+use {{ rust_lib_name }} as app_lib;
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct RouteRow {
+    method: String,
+    path: String,
+    handler: String,
+}
+
+#[derive(Serialize)]
+struct Out {
+    routes: Vec<RouteRow>,
+}
+
+fn main() {
+    let _ = app_lib::routes::health::health;
+    let json = std::env::args().skip(1).any(|a| a == "--json");
+    if json {
+        let routes: Vec<RouteRow> = purwa::route_descriptors()
+            .map(|d| RouteRow {
+                method: d.method.to_string(),
+                path: d.path.to_string(),
+                handler: d.handler_label.to_string(),
+            })
+            .collect();
+        println!("{}", serde_json::to_string_pretty(&Out { routes }).unwrap());
+    } else {
+        print!("{}", purwa::format_route_table());
+    }
+}

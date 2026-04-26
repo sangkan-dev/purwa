@@ -213,15 +213,17 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] `clap` + `inquire` for `empu new` wizard.
-- [ ] Codegen with `askama` templates; verbose/`--dry-run` where useful.
-- [ ] `empu serve`, `empu dev` (cargo-watch), `empu build` (Rust + Vite).
-- [ ] **`empu route:list` (full PRD §11):** run the application binary (e.g. `cargo run -- …`) or a dedicated `main` subcommand so the process **links** route `inventory`, then print `purwa::format_route_table()` (or stream JSON). Sprint 2 shipped `format_route_table` / `route_descriptors` + CLI stub only.
+- [x] `clap` + `inquire` for `empu new` wizard (`--yes` non-interactive; `--purwa-path` for local `purwa` facade).
+- [x] Codegen with **Askama** (`purwa-cli/templates/`); global `--verbose` / `--dry-run`.
+- [x] `empu serve` (`cargo run`, `RUST_LOG=debug` if unset), `empu dev` (`cargo watch -x run`; needs `cargo install cargo-watch`), `empu build` (`cargo build --release` + optional `frontend/` `npm ci && npm run build` on Unix).
+- [x] **`empu route:list`:** runs `cargo run --bin purwa-print-routes` (scaffolded app); `--json` supported.
+- [x] `make:controller`, `make:service`, `make:model` (`--sea-orm` notes only), `make:migration` (paired `.up.sql` / `.down.sql`); `make:request` / `make:auth` ported to templates.
+- [x] **Deferred (explicit):** `make:seeder`, `make:policy`, `db:seed`, `inertia:setup` — stub subcommands printing pointer to roadmap / GitHub.
 
 ### Done when
 
-- [ ] PRD §11: `empu new myapp` + cold build path documented; target &lt; 30s **or** document machine baseline if not met.
-- [ ] All MVP commands from PRD §8.1 present or explicitly deferred with issue.
+- [x] PRD §11: `empu new` + cold build baseline documented in generated **README** (~30s or document hardware / `CARGO_TARGET_DIR`).
+- [x] PRD §8.1: core commands implemented; deferred items above documented in this TASK + stub CLI output.
 
 ---
 
@@ -333,6 +335,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 5: `validator`, `ValidatedJson`/`ValidatedForm`, `PurwaError` + 422 JSON, `empu make:request` |
 | 2026-04-26 | Sprint 6: `purwa-inertia` v1.3 protocol, `[inertia]` config, `purwa` feature `inertia` |
 | 2026-04-26 | Sprint 7: `purwa-auth` (Argon2id, `axum-login`, `CurrentUser`, `#[auth]`, policy/token stubs), `purwa` feature `auth`, `empu make:auth` |
+| 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed/inertia:setup stubs |
 
 ---
 
