@@ -1,0 +1,40 @@
+//! Welcome — sample Inertia page (Sprint 9).
+
+use axum::extract::Extension;
+use axum::http::header::HOST;
+use axum::http::{HeaderMap, Method, StatusCode, Uri};
+use axum::response::Response;
+use purwa::get;
+use purwa::{InertiaRenderContext, InertiaRequest, SharedProps};
+
+use crate::WelcomeInject;
+
+#[get("/")]
+pub async fn welcome(
+    inertia: InertiaRequest,
+    Extension(shared): Extension<SharedProps>,
+    Extension(ctx): Extension<WelcomeInject>,
+    uri: Uri,
+    method: Method,
+    headers: HeaderMap,
+) -> Result<Response, std::convert::Infallible> {
+    let host = headers.get(HOST).and_then(|h| h.to_str().ok());
+    let ver = ctx.config.inertia.asset_version.as_str();
+    let shell = ctx.shell_tags.as_ref();
+    let render = InertiaRenderContext {
+        method: &method,
+        request_uri: &uri,
+        host_header: host,
+        asset_version: ver,
+        html_body_injection: if shell.is_empty() { None } else { Some(shell) },
+    };
+    let page = serde_json::json!({
+        "title": "Welcome",
+    });
+    Ok(inertia.respond(&render, "Welcome", page, &shared).unwrap_or_else(|e| {
+        Response::builder()
+            .status(StatusCode::INTERNAL_SERVER_ERROR)
+            .body(axum::body::Body::from(e.to_string()))
+            .unwrap()
+    }))
+}

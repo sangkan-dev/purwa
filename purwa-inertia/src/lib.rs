@@ -11,11 +11,13 @@
 //!   `X-Inertia-Partial-Except` wins over `X-Inertia-Partial-Data`; `errors` is always included.
 //! - [`SharedProps`] + [`shared::ensure_shared_props`] middleware merge props into every page.
 //!
-//! Production **Vite + Svelte** wiring is **Sprint 9**; the HTML stub here is intentionally minimal.
+//! **Vite + Svelte:** use [`vite_manifest`] for full-page `<script>` / `<link>` tags and
+//! [`InertiaRenderContext::html_body_injection`](crate::InertiaRenderContext::html_body_injection) in [`InertiaRequest::respond`](crate::InertiaRequest::respond).
 
 pub mod headers;
 mod request;
 pub mod shared;
+pub mod vite_manifest;
 
 pub use request::{InertiaRenderContext, InertiaRequest};
 pub use shared::{SharedProps, ensure_shared_props, seed_shared_props_from_config};

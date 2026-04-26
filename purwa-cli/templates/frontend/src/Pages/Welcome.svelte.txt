@@ -1,0 +1,17 @@
+<script>
+  let { title = "Welcome" } = $props();
+</script>
+
+<main class="welcome">
+  <h1>{title}</h1>
+  <p>Purwa + Inertia + Svelte (Sprint 9).</p>
+</main>
+
+<style>
+  .welcome {
+    font-family: system-ui, sans-serif;
+    max-width: 40rem;
+    margin: 3rem auto;
+    padding: 0 1rem;
+  }
+</style>

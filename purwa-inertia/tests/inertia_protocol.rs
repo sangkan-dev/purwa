@@ -37,6 +37,7 @@ async fn events_page(
         request_uri: &uri,
         host_header: host,
         asset_version: "v1",
+        html_body_injection: None,
     };
     Ok(inertia
         .respond(&ctx, "Events", page, &shared)

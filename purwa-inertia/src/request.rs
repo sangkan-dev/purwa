@@ -22,6 +22,8 @@ pub struct InertiaRenderContext<'a> {
     pub request_uri: &'a Uri,
     pub host_header: Option<&'a str>,
     pub asset_version: &'a str,
+    /// Full-page HTML only: raw HTML fragment (Vite `<script>` / `<link>` tags) inserted before `</body>`.
+    pub html_body_injection: Option<&'a str>,
 }
 
 /// Parsed Inertia-related headers for one request.
@@ -133,7 +135,10 @@ impl InertiaRequest {
             return Ok(json_inertia_response(&page));
         }
 
-        Ok(html_shell_response(&page))
+        Ok(html_shell_response(
+            &page,
+            ctx.html_body_injection.unwrap_or(""),
+        ))
     }
 }
 
@@ -218,7 +223,7 @@ fn json_inertia_response(page: &Value) -> Response {
     res
 }
 
-fn html_shell_response(page: &Value) -> Response {
+fn html_shell_response(page: &Value, body_injection: &str) -> Response {
     let json = page.to_string();
     let html = format!(
         r#"<!DOCTYPE html>
@@ -229,9 +234,9 @@ fn html_shell_response(page: &Value) -> Response {
   <title>Purwa + Inertia</title>
 </head>
 <body>
-  <!-- Sprint 9: load Vite / Svelte client entry here -->
   <script type="application/json" data-page="app">{json}</script>
   <div id="app"></div>
+  {body_injection}
 </body>
 </html>"#
     );

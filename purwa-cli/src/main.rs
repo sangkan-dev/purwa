@@ -2,6 +2,7 @@
 
 mod cli;
 mod deferred;
+mod frontend;
 mod generate;
 mod migrate_cmd;
 mod runners;
@@ -52,7 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Some(Commands::MakeSeeder(_)) => deferred::print_deferred("make:seeder"),
         Some(Commands::MakePolicy(_)) => deferred::print_deferred("make:policy"),
         Some(Commands::DbSeed(_)) => deferred::print_deferred("db:seed"),
-        Some(Commands::InertiaSetup(_)) => deferred::print_deferred("inertia:setup"),
+        Some(Commands::InertiaSetup(args)) => frontend::run_inertia_setup(args, opts)?,
         None => {
             eprintln!(
                 "empu — Purwa CLI. Try: empu new, empu serve, empu route:list, empu migrate, empu make:request, …"

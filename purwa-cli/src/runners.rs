@@ -1,13 +1,68 @@
 //! `serve`, `dev`, `build`, `route:list`.
 
 use std::ffi::OsString;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
+
+use serde_json::Value;
+use toml_edit::DocumentMut;
 
 use crate::cli::{BuildArgs, DevArgs, RouteListArgs, ServeArgs};
 
 fn cargo_bin() -> OsString {
     std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into())
+}
+
+fn validate_vite_outdir_public(
+    frontend: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let cfg = frontend.join("vite.config.js");
+    if !cfg.is_file() {
+        return Ok(());
+    }
+    let s = std::fs::read_to_string(&cfg)?;
+    if !s.contains("../public") {
+        return Err(
+            "frontend/vite.config.js must set build.outDir to '../public' (see `empu inertia:setup`)."
+                .into(),
+        );
+    }
+    Ok(())
+}
+
+fn sync_inertia_asset_version_from_manifest(
+    project_root: &Path,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let manifest_path = project_root.join("public/.vite/manifest.json");
+    let raw = std::fs::read_to_string(&manifest_path)
+        .map_err(|_| format!("expected {} after vite build", manifest_path.display()))?;
+    let v: Value = serde_json::from_str(&raw)?;
+    let file = v
+        .get("src/app.js")
+        .and_then(|e| e.get("file"))
+        .and_then(|x| x.as_str())
+        .ok_or("vite manifest missing entry for \"src/app.js\"")?;
+    let version = std::path::Path::new(file)
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or(file)
+        .to_string();
+    let purwa_path = project_root.join("purwa.toml");
+    let src = std::fs::read_to_string(&purwa_path)
+        .map_err(|e| format!("{}: {}", purwa_path.display(), e))?;
+    let mut doc: DocumentMut = src
+        .parse()
+        .map_err(|e: toml_edit::TomlError| e.to_string())?;
+    if doc.get("inertia").is_none() || !doc["inertia"].is_table_like() {
+        doc["inertia"] = toml_edit::table();
+    }
+    doc["inertia"]["asset_version"] = toml_edit::value(version);
+    std::fs::write(&purwa_path, doc.to_string())?;
+    eprintln!(
+        "Updated [inertia].asset_version in {}",
+        purwa_path.display()
+    );
+    Ok(())
 }
 
 pub fn run_serve(args: ServeArgs) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
@@ -75,6 +130,7 @@ pub fn run_build(args: BuildArgs) -> Result<(), Box<dyn std::error::Error + Send
         .unwrap_or_else(|| PathBuf::from("."));
     let frontend = root.join("frontend");
     if frontend.join("package.json").is_file() {
+        validate_vite_outdir_public(&frontend)?;
         eprintln!("Running npm ci && npm run build in {}", frontend.display());
         let st = Command::new("sh")
             .arg("-c")
@@ -84,6 +140,7 @@ pub fn run_build(args: BuildArgs) -> Result<(), Box<dyn std::error::Error + Send
         if !st.success() {
             return Err("frontend build failed".into());
         }
+        sync_inertia_asset_version_from_manifest(&root)?;
     }
     Ok(())
 }

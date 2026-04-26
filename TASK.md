@@ -218,7 +218,7 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 - [x] `empu serve` (`cargo run`, `RUST_LOG=debug` if unset), `empu dev` (`cargo watch -x run`; needs `cargo install cargo-watch`), `empu build` (`cargo build --release` + optional `frontend/` `npm ci && npm run build` on Unix).
 - [x] **`empu route:list`:** runs `cargo run --bin purwa-print-routes` (scaffolded app); `--json` supported.
 - [x] `make:controller`, `make:service`, `make:model` (`--sea-orm` notes only), `make:migration` (paired `.up.sql` / `.down.sql`); `make:request` / `make:auth` ported to templates.
-- [x] **Deferred (explicit):** `make:seeder`, `make:policy`, `db:seed`, `inertia:setup` — stub subcommands printing pointer to roadmap / GitHub.
+- [x] **Deferred (explicit):** `make:seeder`, `make:policy`, `db:seed` — stub subcommands printing pointer to roadmap / GitHub. **`inertia:setup`** implemented in Sprint 9.
 
 ### Done when
 
@@ -235,14 +235,14 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Default `frontend/` layout per PRD §6; Pages/Components conventions.
-- [ ] Vite config for Inertia client; env for backend URL.
-- [ ] `empu build` runs frontend build and places artifacts.
-- [ ] Document Node version.
+- [x] Default `frontend/` layout per PRD §6; Pages/Components conventions.
+- [x] Vite config for Inertia client; env for backend URL.
+- [x] `empu build` runs frontend build and places artifacts.
+- [x] Document Node version.
 
 ### Done when
 
-- [ ] New app serves at least one Inertia page end-to-end in dev and prod build.
+- [x] New app serves at least one Inertia page end-to-end in dev and prod build.
 
 ---
 
@@ -335,7 +335,8 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 5: `validator`, `ValidatedJson`/`ValidatedForm`, `PurwaError` + 422 JSON, `empu make:request` |
 | 2026-04-26 | Sprint 6: `purwa-inertia` v1.3 protocol, `[inertia]` config, `purwa` feature `inertia` |
 | 2026-04-26 | Sprint 7: `purwa-auth` (Argon2id, `axum-login`, `CurrentUser`, `#[auth]`, policy/token stubs), `purwa` feature `auth`, `empu make:auth` |
-| 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed/inertia:setup stubs |
+| 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed stubs |
+| 2026-04-26 | Sprint 9: `frontend/` Vite+Svelte+Inertia template, `empu inertia:setup`, `purwa-inertia` HTML shell injection + `vite_manifest`, scaffold `Welcome` + `ServeDir`, `empu build` manifest → `[inertia].asset_version`, `purwa` flattens `purwa-inertia` exports |
 
 ---
 

@@ -17,6 +17,9 @@ struct Out {
 
 fn main() {
     let _ = app_lib::routes::health::health;
+{% if inertia %}
+    let _ = app_lib::routes::welcome::welcome;
+{% endif %}
     let json = std::env::args().skip(1).any(|a| a == "--json");
     if json {
         let routes: Vec<RouteRow> = purwa::route_descriptors()

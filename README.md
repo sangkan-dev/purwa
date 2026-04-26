@@ -34,7 +34,7 @@ Malformed JSON (**400**) uses `{ "message": "…" }`. [`PurwaError`](purwa-core/
 
 ## Inertia.js (Sprint 6)
 
-Enable the adapter with **`purwa = { path = "...", features = ["inertia"] }`**. Crate **[`purwa-inertia`](purwa-inertia/src/lib.rs)** implements protocol **v1.3**: `InertiaRequest` extractor, [`InertiaRenderContext`](purwa-inertia/src/request.rs) + [`InertiaRequest::respond`](purwa-inertia/src/request.rs) (JSON vs HTML first-load stub), partial reload headers, **409** on asset version mismatch for GET, and shared props middleware. Set **`[inertia].asset_version`** in `purwa.toml` (or `PURWA_INERTIA__ASSET_VERSION`). Full **Vite + Svelte** wiring is **Sprint 9**; the HTML skeleton is a placeholder until then.
+Enable the adapter with **`purwa = { path = "...", features = ["inertia"] }`**. Crate **[`purwa-inertia`](purwa-inertia/src/lib.rs)** implements protocol **v1.3**: `InertiaRequest` extractor, [`InertiaRenderContext`](purwa-inertia/src/request.rs) + [`InertiaRequest::respond`](purwa-inertia/src/request.rs) (JSON vs HTML first load with optional Vite tags via `html_body_injection`), partial reload headers, **409** on asset version mismatch for GET, and shared props middleware. Set **`[inertia].asset_version`** in `purwa.toml` (or `PURWA_INERTIA__ASSET_VERSION`); **`empu build`** can sync it from `public/.vite/manifest.json` after the Vite build. Use **`empu new --inertia`** or **`empu inertia:setup`** for the `frontend/` template.
 
 ## Routing note
 

@@ -4,4 +4,39 @@
 
 pub mod routes {
     pub mod health;
+{% if inertia %}
+    pub mod welcome;
+{% endif %}
 }
+{% if inertia %}
+
+use std::sync::Arc;
+
+use purwa::AppConfig;
+use purwa::vite_manifest::{html_tags_from_manifest, html_tags_vite_dev};
+
+/// Passed with [`axum::Extension`] for [`routes::welcome`] and full-page HTML shell tags.
+#[derive(Clone)]
+pub struct WelcomeInject {
+    pub config: Arc<AppConfig>,
+    pub shell_tags: Arc<str>,
+}
+
+/// **Dev:** set `PURWA_VITE_DEV_ORIGIN` (e.g. `http://127.0.0.1:5173`) so the HTML shell loads Vite HMR.  
+/// **Prod:** after `npm run build`, reads `public/.vite/manifest.json`.
+pub fn load_shell_tags() -> Arc<str> {
+    if let Ok(origin) = std::env::var("PURWA_VITE_DEV_ORIGIN") {
+        let t = origin.trim();
+        if !t.is_empty() {
+            return Arc::from(html_tags_vite_dev(t, "src/app.js").into_boxed_str());
+        }
+    }
+    let path = std::path::Path::new("public/.vite/manifest.json");
+    if let Ok(raw) = std::fs::read_to_string(path) {
+        if let Ok(tags) = html_tags_from_manifest(&raw, "src/app.js") {
+            return Arc::from(tags.into_boxed_str());
+        }
+    }
+    Arc::from("")
+}
+{% endif %}

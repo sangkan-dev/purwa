@@ -7,10 +7,11 @@ use heck::ToTitleCase;
 use inquire::Confirm;
 
 use crate::cli::NewArgs;
+use crate::frontend::write_frontend_tree;
 use crate::generate::{
     ScaffoldCargoToml, ScaffoldEnvExample, ScaffoldHealth, ScaffoldLibRs, ScaffoldMainRs,
-    ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme, crate_package_name, features_csv,
-    purwa_dep_toml, rust_lib_name_from_package,
+    ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme, ScaffoldWelcome, crate_package_name,
+    features_csv, purwa_dep_toml, rust_lib_name_from_package,
 };
 use crate::util::{GlobalOpts, write_output};
 
@@ -82,17 +83,24 @@ pub fn run_new(
         crate_name: &pkg,
         purwa_dep: &dep_inner,
         features_csv: &features_csv,
+        inertia,
     }
     .render()?;
-    let lib_rs = ScaffoldLibRs { title: &title }.render()?;
+    let lib_rs = ScaffoldLibRs {
+        title: &title,
+        inertia,
+    }
+    .render()?;
     let main_rs = ScaffoldMainRs {
         title: &title,
         rust_lib_name: &lib,
         port,
+        inertia,
     }
     .render()?;
     let print_rs = ScaffoldPrintRoutes {
         rust_lib_name: &lib,
+        inertia,
     }
     .render()?;
     let health_rs = ScaffoldHealth.render()?;
@@ -100,6 +108,7 @@ pub fn run_new(
         title: &title,
         app_name: &app_name,
         port,
+        inertia,
     }
     .render()?;
     let env_ex = ScaffoldEnvExample {
@@ -109,10 +118,17 @@ pub fn run_new(
     let readme = ScaffoldReadme {
         title: &title,
         port,
+        inertia,
     }
     .render()?;
 
-    let paths = [
+    let welcome_rs = if inertia {
+        Some(ScaffoldWelcome.render()?)
+    } else {
+        None
+    };
+
+    let mut paths: Vec<(PathBuf, String)> = vec![
         (root.join("Cargo.toml"), cargo),
         (root.join("src/lib.rs"), lib_rs),
         (root.join("src/main.rs"), main_rs),
@@ -122,6 +138,10 @@ pub fn run_new(
         (root.join(".env.example"), env_ex),
         (root.join("README.md"), readme),
     ];
+    if let Some(w) = welcome_rs {
+        paths.push((root.join("src/routes/welcome.rs"), w));
+        paths.push((root.join("public/.gitkeep"), String::new()));
+    }
 
     for (path, content) in paths {
         write_output(&path, &content, opts)?;
@@ -129,6 +149,10 @@ pub fn run_new(
 
     let gitkeep = root.join("database/migrations/.gitkeep");
     write_output(&gitkeep, "", opts)?;
+
+    if inertia {
+        write_frontend_tree(&root.join("frontend"), port, opts)?;
+    }
 
     if !opts.dry_run {
         eprintln!("Created Purwa app at {}", root.display());

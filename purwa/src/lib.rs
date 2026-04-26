@@ -29,7 +29,7 @@ pub mod auth {
 }
 
 #[cfg(feature = "inertia")]
-pub use purwa_inertia;
+pub use purwa_inertia::*;
 
 #[cfg(feature = "sea-orm")]
 pub use purwa_orm;

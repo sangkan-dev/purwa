@@ -62,7 +62,7 @@ pub enum Commands {
     #[command(name = "db:seed")]
     DbSeed(DeferredArgs),
     #[command(name = "inertia:setup")]
-    InertiaSetup(DeferredArgs),
+    InertiaSetup(InertiaSetupArgs),
 }
 
 #[derive(Parser)]
@@ -175,6 +175,19 @@ pub struct MakeMigrationArgs {
     pub name: String,
     #[arg(long, default_value = "database/migrations")]
     pub migrations_dir: PathBuf,
+}
+
+#[derive(Parser)]
+pub struct InertiaSetupArgs {
+    /// Directory for the frontend tree
+    #[arg(long, default_value = "frontend")]
+    pub output: PathBuf,
+    /// Default backend URL port in generated `vite.config.js` (`VITE_PURWA_URL` overrides)
+    #[arg(long, default_value_t = 3000)]
+    pub backend_port: u16,
+    /// Overwrite an existing `package.json`
+    #[arg(long)]
+    pub force: bool,
 }
 
 #[derive(Parser)]

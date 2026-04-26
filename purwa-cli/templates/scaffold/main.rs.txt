@@ -2,13 +2,51 @@
 
 use std::net::SocketAddr;
 
+{% if inertia %}
+use axum::Router;
+use axum::body::Body;
+use axum::http::Request;
+use axum::middleware::Next;
+use {{ rust_lib_name }}::{WelcomeInject, load_shell_tags};
+use purwa::AppConfig;
+use purwa::ensure_shared_props;
+use purwa::router_from_inventory;
+use tower_http::services::ServeDir;
+{% else %}
 use {{ rust_lib_name }} as _;
 use purwa::router_from_inventory;
+{% endif %}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     dotenvy::dotenv().ok();
+{% if inertia %}
+    let config = AppConfig::load()?;
+    let inject = WelcomeInject {
+        config: config.clone(),
+        shell_tags: load_shell_tags(),
+    };
+    let cfg_seed = config.clone();
+    let app = Router::new()
+        .merge(router_from_inventory())
+        .layer(axum::Extension(inject))
+        .layer(axum::middleware::from_fn(move |mut req: Request<Body>, next: Next| {
+            let cfg_seed = cfg_seed.clone();
+            async move {
+                let mut p = purwa::SharedProps::default();
+                p.insert(
+                    "app",
+                    serde_json::json!({ "name": cfg_seed.app.name.clone() }),
+                );
+                req.extensions_mut().insert(p);
+                next.run(req).await
+            }
+        }))
+        .layer(axum::middleware::from_fn(ensure_shared_props))
+        .fallback_service(ServeDir::new("public"));
+{% else %}
     let app = router_from_inventory();
+{% endif %}
     let addr = SocketAddr::from(([0, 0, 0, 0], {{ port }}));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     eprintln!("listening on http://{}", listener.local_addr()?);
