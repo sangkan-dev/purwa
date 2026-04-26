@@ -24,6 +24,14 @@ Settings load from optional **`purwa.toml`** in the working directory and from e
 
 Merging **inventory-based routes** ([`router_from_inventory`](purwa-core/src/routing.rs)) with a router that uses **`AppState`** (typed `Router<AppState>`) is a composition detail for your `main` (Sprint 4+ may refine helpers); handlers that need config should use `State<Arc<AppConfig>>` with [`AppState`](purwa-core/src/lib.rs) and Axum `FromRef`.
 
+## Validation (Sprint 5)
+
+Use the [`validator`](https://docs.rs/validator) crate (`#[derive(Validate)]` on request DTOs) with [`ValidatedJson`](purwa-core/src/extract.rs) or [`ValidatedForm`](purwa-core/src/extract.rs). Failed rules return **422** with JSON:
+
+`{ "message": "Validation failed", "errors": { "field_name": ["…"] } }`
+
+Malformed JSON (**400**) uses `{ "message": "…" }`. [`PurwaError`](purwa-core/src/error.rs) implements `IntoResponse` for use in `Result`-returning handlers. Scaffold a DTO with `empu make:request CreateThing` (writes `src/app/http/requests/create_thing.rs` by default).
+
 ## Routing note
 
 Purwa registers HTTP handlers with the [`inventory`](https://docs.rs/inventory) crate (linker sections). That mechanism is **not supported on `wasm32` targets**; use Purwa on native server/desktop targets only for macro-based routing.

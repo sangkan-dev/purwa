@@ -4,6 +4,8 @@
 //! and Tower services directly (escape hatch; PRD §3.1).
 
 pub mod config;
+pub mod error;
+pub mod extract;
 pub mod routing;
 
 use std::sync::Arc;
@@ -12,6 +14,8 @@ use axum::extract::FromRef;
 use axum::{Router, routing::get};
 
 pub use config::{AppConfig, AppSection, DatabaseSection, PurwaConfigError, ServerSection};
+pub use error::{PurwaError, ValidationErrorBody, flatten_validation_errors};
+pub use extract::{ValidatedForm, ValidatedJson};
 pub use routing::{
     RegisteredRoute, RouteDescriptor, format_route_table, route_descriptors, router_from_inventory,
 };

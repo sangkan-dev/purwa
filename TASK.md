@@ -152,14 +152,14 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Derive/helper for validated forms (`#[derive(Validate)]` + Purwa wrapper).
-- [ ] Axum extractor returning typed errors mapping to `PurwaError` (stub enum extended in S10).
-- [ ] `empu make:request <Name>` template (generator polish in S8).
+- [x] Derive/helper for validated forms (`#[derive(Validate)]` + Purwa wrapper).
+- [x] Axum extractor returning typed errors mapping to `PurwaError` (stub enum extended in S10).
+- [x] `empu make:request <Name>` template (generator polish in S8).
 
 ### Done when
 
-- [ ] Invalid payload returns structured errors usable from Svelte forms.
-- [ ] Clippy clean.
+- [x] Invalid payload returns structured errors usable from Svelte forms.
+- [x] Clippy clean.
 
 ---
 
@@ -328,6 +328,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 2: `purwa-macros`, `inventory` routing, `#[resource]`, `format_route_table`, `empu route:list` stub; full CLI deferred S8 |
 | 2026-04-26 | Sprint 3: `AppConfig`/`AppState`, dotenvy+config, `purwa.toml.example`, `.env.example`, config integration test |
 | 2026-04-26 | Sprint 4: `sqlx`/`PgPool`/`AppState`, `purwa-orm` migrate helpers, `empu migrate*`, `sea-orm` feature stub, testcontainers IT |
+| 2026-04-26 | Sprint 5: `validator`, `ValidatedJson`/`ValidatedForm`, `PurwaError` + 422 JSON, `empu make:request` |
 
 ---
 
