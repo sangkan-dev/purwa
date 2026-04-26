@@ -1,0 +1,35 @@
+{% raw %}
+<script>
+  let { status = 500, message = "Something went wrong", errors = {} } = $props();
+</script>
+
+<main class="error-page">
+  <h1>Error</h1>
+  <p class="status">{status}</p>
+  <p class="message">{message}</p>
+  {#if Object.keys(errors).length > 0}
+    <ul class="errors">
+      {#each Object.entries(errors) as [field, msgs] (field)}
+        <li><strong>{field}</strong>: {Array.isArray(msgs) ? msgs.join(", ") : msgs}</li>
+      {/each}
+    </ul>
+  {/if}
+</main>
+
+<style>
+  .error-page {
+    font-family: system-ui, sans-serif;
+    max-width: 40rem;
+    margin: 3rem auto;
+    padding: 0 1rem;
+  }
+  .status {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  .errors {
+    margin-top: 1rem;
+    padding-left: 1.25rem;
+  }
+</style>
+{% endraw %}

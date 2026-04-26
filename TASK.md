@@ -254,14 +254,14 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ### Tasks
 
-- [ ] Central error enum; `thiserror` in libraries, `anyhow` guidance for apps.
-- [ ] Map validation/auth/DB errors to HTTP + Inertia responses.
-- [ ] Tracing setup helper in `purwa-core` or facade.
+- [x] Central error enum; `thiserror` in libraries, `anyhow` guidance for apps.
+- [x] Map validation/auth/DB errors to HTTP + Inertia responses.
+- [x] Tracing setup helper in `purwa-core` or facade.
 
 ### Done when
 
-- [ ] One integration test asserts error response shape.
-- [ ] PRD §11: pretty error page for Inertia navigations.
+- [x] One integration test asserts error response shape.
+- [x] PRD §11: pretty error page for Inertia navigations.
 
 ---
 
@@ -337,6 +337,7 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 7: `purwa-auth` (Argon2id, `axum-login`, `CurrentUser`, `#[auth]`, policy/token stubs), `purwa` feature `auth`, `empu make:auth` |
 | 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed stubs |
 | 2026-04-26 | Sprint 9: `frontend/` Vite+Svelte+Inertia template, `empu inertia:setup`, `purwa-inertia` HTML shell injection + `vite_manifest`, scaffold `Welcome` + `ServeDir`, `empu build` manifest → `[inertia].asset_version`, `purwa` flattens `purwa-inertia` exports |
+| 2026-04-26 | Sprint 10: extended `PurwaError` (401/403/404/DB/internal), `respond_purwa_error` + `Error.svelte`, `CurrentUser` → `PurwaError`, `init_tracing` / JSON prod, integration tests |
 
 ---
 

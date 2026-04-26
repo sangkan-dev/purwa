@@ -8,12 +8,16 @@ use axum::http::header::{self, HeaderMap, HeaderValue};
 use axum::http::request::Parts;
 use axum::http::{Method, StatusCode, Uri};
 use axum::response::{IntoResponse, Response};
+use purwa_core::PurwaError;
 use serde_json::{Map, Value};
 
 use crate::headers::{
     X_INERTIA, X_INERTIA_PARTIAL_COMPONENT, X_INERTIA_PARTIAL_DATA, X_INERTIA_PARTIAL_EXCEPT,
     X_INERTIA_VERSION,
 };
+
+/// Default Svelte page name for [`InertiaRequest::respond_purwa_error`].
+pub const INERTIA_ERROR_COMPONENT: &str = "Error";
 
 /// Request-scoped values for [`InertiaRequest::respond`] (keeps the handler signature small).
 #[derive(Debug, Clone, Copy)]
@@ -138,6 +142,57 @@ impl InertiaRequest {
         Ok(html_shell_response(
             &page,
             ctx.html_body_injection.unwrap_or(""),
+            StatusCode::OK,
+        ))
+    }
+
+    /// Map [`PurwaError`] to an Inertia JSON or full-page HTML response (same shell as [`Self::respond`]).
+    ///
+    /// Renders the page component named `error_component` (use [`INERTIA_ERROR_COMPONENT`] with the
+    /// generated `Pages/Error.svelte`).
+    pub fn respond_purwa_error(
+        &self,
+        ctx: &InertiaRenderContext<'_>,
+        err: PurwaError,
+        shared: &crate::SharedProps,
+        error_component: &str,
+    ) -> Result<Response, serde_json::Error> {
+        if let Some(conflict) = self.version_conflict_response(
+            ctx.method,
+            ctx.asset_version,
+            ctx.request_uri,
+            ctx.host_header,
+        ) {
+            return Ok(conflict);
+        }
+
+        let status = err.status_code();
+        let mut props = shared.0.clone();
+        if let Value::Object(p) = err.inertia_error_props() {
+            for (k, v) in p {
+                props.insert(k, v);
+            }
+        }
+        ensure_errors_prop(&mut props);
+
+        let url = page_url(ctx.request_uri);
+        let page = serde_json::json!({
+            "component": error_component,
+            "props": Value::Object(props),
+            "url": url,
+            "version": ctx.asset_version,
+        });
+
+        if self.is_inertia {
+            let mut res = json_inertia_response(&page);
+            *res.status_mut() = status;
+            return Ok(res);
+        }
+
+        Ok(html_shell_response(
+            &page,
+            ctx.html_body_injection.unwrap_or(""),
+            status,
         ))
     }
 }
@@ -223,7 +278,7 @@ fn json_inertia_response(page: &Value) -> Response {
     res
 }
 
-fn html_shell_response(page: &Value, body_injection: &str) -> Response {
+fn html_shell_response(page: &Value, body_injection: &str, status: StatusCode) -> Response {
     let json = page.to_string();
     let html = format!(
         r#"<!DOCTYPE html>
@@ -241,7 +296,7 @@ fn html_shell_response(page: &Value, body_injection: &str) -> Response {
 </html>"#
     );
     Response::builder()
-        .status(StatusCode::OK)
+        .status(status)
         .header(header::CONTENT_TYPE, "text/html; charset=utf-8")
         .body(Body::from(html))
         .unwrap()

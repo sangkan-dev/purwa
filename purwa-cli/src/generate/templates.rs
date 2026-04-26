@@ -96,6 +96,10 @@ pub struct FrontendAppJs;
 pub struct FrontendWelcomeSvelte;
 
 #[derive(Template)]
+#[template(path = "frontend/src/Pages/Error.svelte.txt", escape = "none")]
+pub struct FrontendErrorSvelte;
+
+#[derive(Template)]
 #[template(path = "frontend/.gitignore.txt", escape = "none")]
 pub struct FrontendGitignore;
 

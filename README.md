@@ -32,6 +32,14 @@ Use the [`validator`](https://docs.rs/validator) crate (`#[derive(Validate)]` on
 
 Malformed JSON (**400**) uses `{ "message": "…" }`. [`PurwaError`](purwa-core/src/error.rs) implements `IntoResponse` for use in `Result`-returning handlers. Scaffold a DTO with `empu make:request CreateThing` (writes `src/app/http/requests/create_thing.rs` by default).
 
+## Errors & logging (Sprint 10)
+
+[`PurwaError`](purwa-core/src/error.rs) covers validation, malformed JSON/form, **401 / 403 / 404**, **`sqlx::Error`** (row-not-found maps to 404; details are logged, not returned), and generic **500**. Library crates should use **`thiserror`** and surface `PurwaError` at HTTP boundaries; application binaries may use **`anyhow`** in `main` (startup, glue) and convert to `PurwaError` before returning from handlers.
+
+**Inertia:** use [`InertiaRequest::respond_purwa_error`](purwa-inertia/src/request.rs) with the shared **`Error`** page (`INERTIA_ERROR_COMPONENT`, generated as `Pages/Error.svelte`) so X-Inertia JSON and full-page HTML stay aligned.
+
+**Tracing:** call **`purwa::init_tracing()`** once at startup (after `dotenvy::dotenv()`). Uses **pretty** logs by default; set **`PURWA_ENV=production`** for **JSON** lines. Levels follow **`RUST_LOG`** (default `info` via [`init_tracing_with_filter`](purwa-core/src/logging.rs)).
+
 ## Inertia.js (Sprint 6)
 
 Enable the adapter with **`purwa = { path = "...", features = ["inertia"] }`**. Crate **[`purwa-inertia`](purwa-inertia/src/lib.rs)** implements protocol **v1.3**: `InertiaRequest` extractor, [`InertiaRenderContext`](purwa-inertia/src/request.rs) + [`InertiaRequest::respond`](purwa-inertia/src/request.rs) (JSON vs HTML first load with optional Vite tags via `html_body_injection`), partial reload headers, **409** on asset version mismatch for GET, and shared props middleware. Set **`[inertia].asset_version`** in `purwa.toml` (or `PURWA_INERTIA__ASSET_VERSION`); **`empu build`** can sync it from `public/.vite/manifest.json` after the Vite build. Use **`empu new --inertia`** or **`empu inertia:setup`** for the `frontend/` template.

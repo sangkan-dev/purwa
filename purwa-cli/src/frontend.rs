@@ -6,8 +6,8 @@ use askama::Template;
 
 use crate::cli::InertiaSetupArgs;
 use crate::generate::{
-    FrontendAppJs, FrontendGitignore, FrontendPackageJson, FrontendSvelteConfig,
-    FrontendViteConfig, FrontendWelcomeSvelte,
+    FrontendAppJs, FrontendErrorSvelte, FrontendGitignore, FrontendPackageJson,
+    FrontendSvelteConfig, FrontendViteConfig, FrontendWelcomeSvelte,
 };
 use crate::util::{GlobalOpts, write_output};
 
@@ -17,7 +17,7 @@ pub fn write_frontend_tree(
     vite_backend_port: u16,
     opts: GlobalOpts,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let files: [(&Path, String); 7] = [
+    let files: [(&Path, String); 8] = [
         (&root.join("package.json"), FrontendPackageJson.render()?),
         (
             &root.join("vite.config.js"),
@@ -34,6 +34,10 @@ pub fn write_frontend_tree(
         (
             &root.join("src/Pages/Welcome.svelte"),
             FrontendWelcomeSvelte.render()?,
+        ),
+        (
+            &root.join("src/Pages/Error.svelte"),
+            FrontendErrorSvelte.render()?,
         ),
         (&root.join("src/Components/.gitkeep"), String::new()),
         (&root.join(".gitignore"), FrontendGitignore.render()?),

@@ -45,6 +45,14 @@ This runs `cargo build --release`, then `npm ci && npm run build` in `frontend/`
 
 Then run the release binary; static files are served from `public/` (e.g. `/assets/...`).
 
+### Inertia errors
+
+Map `purwa::PurwaError` with `InertiaRequest::respond_purwa_error` and `INERTIA_ERROR_COMPONENT` (matches `frontend/src/Pages/Error.svelte`). See the Purwa workspace README (Sprint 10).
+
+### Logging
+
+`main` runs **`purwa::init_tracing()`** after loading `.env`. Use **`RUST_LOG`** (e.g. `debug`); set **`PURWA_ENV=production`** for JSON log lines.
+
 ### Add the frontend to an existing app
 
 ```bash

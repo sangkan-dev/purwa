@@ -20,6 +20,7 @@ use purwa::router_from_inventory;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     dotenvy::dotenv().ok();
+    purwa::init_tracing();
 {% if inertia %}
     let config = AppConfig::load()?;
     let inject = WelcomeInject {

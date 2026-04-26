@@ -13,11 +13,13 @@
 //!
 //! **Vite + Svelte:** use [`vite_manifest`] for full-page `<script>` / `<link>` tags and
 //! [`InertiaRenderContext::html_body_injection`](crate::InertiaRenderContext::html_body_injection) in [`InertiaRequest::respond`](crate::InertiaRequest::respond).
+//!
+//! **Errors (Sprint 10):** [`InertiaRequest::respond_purwa_error`](crate::InertiaRequest::respond_purwa_error) renders [`purwa_core::PurwaError`] as the shared [`INERTIA_ERROR_COMPONENT`] page (e.g. `Pages/Error.svelte`).
 
 pub mod headers;
 mod request;
 pub mod shared;
 pub mod vite_manifest;
 
-pub use request::{InertiaRenderContext, InertiaRequest};
+pub use request::{INERTIA_ERROR_COMPONENT, InertiaRenderContext, InertiaRequest};
 pub use shared::{SharedProps, ensure_shared_props, seed_shared_props_from_config};

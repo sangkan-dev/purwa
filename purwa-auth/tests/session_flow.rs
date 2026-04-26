@@ -6,6 +6,7 @@ use std::sync::{Arc, Mutex};
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
 use axum::response::IntoResponse;
+use serde_json::Value;
 use axum::routing::{get, post};
 use axum::{Form, Router};
 use axum_login::{AuthManagerLayerBuilder, AuthSession, AuthUser, AuthnBackend, UserId};
@@ -126,6 +127,28 @@ async fn login_then_current_user() {
     assert_eq!(res.status(), StatusCode::OK);
     let body = res.into_body().collect().await.unwrap().to_bytes();
     assert_eq!(body.as_ref(), b"id=1");
+}
+
+#[tokio::test]
+async fn me_without_cookie_returns_401_purwa_error_json() {
+    let backend = Backend::default();
+    let session_layer = memory_session_layer();
+    let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
+
+    let app = Router::new()
+        .route("/me", get(me))
+        .layer(auth_layer);
+
+    let req = Request::builder()
+        .method("GET")
+        .uri("/me")
+        .body(Body::empty())
+        .unwrap();
+    let res = app.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
+    let body = res.into_body().collect().await.unwrap().to_bytes();
+    let v: Value = serde_json::from_slice(&body).unwrap();
+    assert_eq!(v["message"], "login required");
 }
 
 fn extract_cookie_value(set_cookie: &str) -> String {

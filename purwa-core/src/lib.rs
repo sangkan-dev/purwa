@@ -6,6 +6,7 @@
 pub mod config;
 pub mod error;
 pub mod extract;
+pub mod logging;
 pub mod routing;
 
 use std::sync::Arc;
@@ -18,6 +19,7 @@ pub use config::{
 };
 pub use error::{PurwaError, ValidationErrorBody, flatten_validation_errors};
 pub use extract::{ValidatedForm, ValidatedJson};
+pub use logging::{init_tracing, init_tracing_with_filter};
 pub use routing::{
     RegisteredRoute, RouteDescriptor, format_route_table, route_descriptors, router_from_inventory,
 };

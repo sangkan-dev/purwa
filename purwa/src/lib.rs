@@ -20,7 +20,7 @@ pub use purwa_core::{
     AppConfig, AppSection, AppState, AxumRouter, DatabaseSection, InertiaSection, PgPool,
     PurwaConfigError, PurwaError, RegisteredRoute, RouteDescriptor, ServerSection, ValidatedForm,
     ValidatedJson, ValidationErrorBody, app_router, flatten_validation_errors, format_route_table,
-    route_descriptors, router_from_inventory,
+    init_tracing, init_tracing_with_filter, route_descriptors, router_from_inventory,
 };
 
 #[cfg(feature = "auth")]
