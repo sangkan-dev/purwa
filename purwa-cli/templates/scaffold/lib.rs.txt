@@ -8,6 +8,10 @@ pub mod routes {
     pub mod welcome;
 {% endif %}
 }
+
+pub mod database {
+    pub mod seeders;
+}
 {% if inertia %}
 
 use std::sync::Arc;

@@ -1,0 +1,6 @@
+//! Application database modules (migrations live under `database/`).
+
+#![forbid(unsafe_code)]
+
+pub mod seeders;
+

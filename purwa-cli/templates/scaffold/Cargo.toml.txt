@@ -15,6 +15,10 @@ path = "src/main.rs"
 name = "purwa-print-routes"
 path = "src/bin/purwa-print-routes.rs"
 
+[[bin]]
+name = "seed"
+path = "src/bin/seed.rs"
+
 [dependencies]
 axum = "0.8"
 dotenvy = "0.15"
@@ -22,6 +26,11 @@ purwa = { {{ purwa_dep }}, features = [{{ features_csv }}] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+sqlx = { version = "0.8.6", default-features = false, features = [
+    "runtime-tokio",
+    "postgres",
+    "tls-rustls-ring",
+] }
 {% if inertia %}
 tower-http = { version = "0.6", features = ["fs"] }
 {% endif %}
@@ -29,10 +38,5 @@ tower-http = { version = "0.6", features = ["fs"] }
 [dev-dependencies]
 purwa-orm = { {{ purwa_orm_dep }} }
 purwa-testing = { {{ purwa_testing_dep }} }
-sqlx = { version = "0.8.6", default-features = false, features = [
-    "runtime-tokio",
-    "postgres",
-    "tls-rustls-ring",
-] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tower = { version = "0.5.3", features = ["util"] }

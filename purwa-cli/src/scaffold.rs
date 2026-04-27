@@ -9,10 +9,11 @@ use inquire::Confirm;
 use crate::cli::NewArgs;
 use crate::frontend::write_frontend_tree;
 use crate::generate::{
-    ScaffoldCargoToml, ScaffoldEnvExample, ScaffoldHealth, ScaffoldLibRs, ScaffoldMainRs,
-    ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme, ScaffoldTestNoDb, ScaffoldTestPostgres,
-    ScaffoldWelcome, crate_package_name, features_csv, purwa_dep_toml, purwa_orm_dep_toml,
-    purwa_testing_dep_toml, rust_lib_name_from_package,
+    ScaffoldBinSeed, ScaffoldCargoToml, ScaffoldDatabaseMod, ScaffoldDatabaseSeedersMod,
+    ScaffoldEnvExample, ScaffoldHealth, ScaffoldLibRs, ScaffoldMainRs, ScaffoldPrintRoutes,
+    ScaffoldPurwaToml, ScaffoldReadme, ScaffoldTestNoDb, ScaffoldTestPostgres, ScaffoldWelcome,
+    crate_package_name, features_csv, purwa_dep_toml, purwa_orm_dep_toml, purwa_testing_dep_toml,
+    rust_lib_name_from_package,
 };
 use crate::util::{GlobalOpts, write_output};
 
@@ -108,7 +109,13 @@ pub fn run_new(
         inertia,
     }
     .render()?;
+    let seed_bin = ScaffoldBinSeed {
+        rust_lib_name: &lib,
+    }
+    .render()?;
     let health_rs = ScaffoldHealth.render()?;
+    let database_mod = ScaffoldDatabaseMod.render()?;
+    let seeders_mod = ScaffoldDatabaseSeedersMod.render()?;
     let purwa_toml = ScaffoldPurwaToml {
         title: &title,
         app_name: &app_name,
@@ -147,10 +154,13 @@ pub fn run_new(
         (root.join("src/lib.rs"), lib_rs),
         (root.join("src/main.rs"), main_rs),
         (root.join("src/bin/purwa-print-routes.rs"), print_rs),
+        (root.join("src/bin/seed.rs"), seed_bin),
         (root.join("src/routes/health.rs"), health_rs),
+        (root.join("src/database/mod.rs"), database_mod),
         (root.join("purwa.toml"), purwa_toml),
         (root.join(".env.example"), env_ex),
         (root.join("README.md"), readme),
+        (root.join("src/database/seeders/mod.rs"), seeders_mod),
         (root.join("tests/no_db_smoke.rs"), test_no_db),
         (root.join("tests/postgres_optional.rs"), test_postgres),
     ];

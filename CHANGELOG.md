@@ -9,6 +9,14 @@ Workspace crates (`purwa`, `purwa-core`, `purwa-macros`, `purwa-inertia`, `purwa
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-27
+
+### Added
+
+- `empu make:seeder <Name>` generator for `database/seeders/` (with deterministic markers in `mod.rs`).
+- `empu db:seed` wrapper (runs `cargo run --bin seed`), plus scaffolded `src/bin/seed.rs`.
+- PRD §8.1 command table now includes a **Status** column (Available vs Planned).
+
 ## [0.1.0] - 2026-04-26
 
 First public **MVP** on [crates.io](https://crates.io): aligned **0.1.0** release train and **Empu** (`purwa-cli`).
@@ -28,5 +36,6 @@ First public **MVP** on [crates.io](https://crates.io): aligned **0.1.0** releas
 
 `purwa-macros`, `purwa-core`, `purwa-orm`, `purwa-inertia`, `purwa-auth`, `purwa-testing`, `purwa`, `purwa-cli` at **v0.1.0**.
 
-[Unreleased]: https://github.com/sangkan-dev/purwa/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/sangkan-dev/purwa/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/sangkan-dev/purwa/releases/tag/v0.1.1
 [0.1.0]: https://github.com/sangkan-dev/purwa/releases/tag/v0.1.0

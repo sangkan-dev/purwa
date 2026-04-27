@@ -57,6 +57,20 @@ pub struct ScaffoldPrintRoutes<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "scaffold/bin_seed.rs.txt", escape = "none")]
+pub struct ScaffoldBinSeed<'a> {
+    pub rust_lib_name: &'a str,
+}
+
+#[derive(Template)]
+#[template(path = "scaffold/database_seeders_mod.rs.txt", escape = "none")]
+pub struct ScaffoldDatabaseSeedersMod;
+
+#[derive(Template)]
+#[template(path = "scaffold/database_mod.rs.txt", escape = "none")]
+pub struct ScaffoldDatabaseMod;
+
+#[derive(Template)]
 #[template(path = "scaffold/routes_health.rs.txt", escape = "none")]
 pub struct ScaffoldHealth;
 
@@ -135,6 +149,12 @@ pub struct MakeServiceTpl<'a> {
 #[template(path = "make/model.txt", escape = "none")]
 pub struct MakeModelTpl<'a> {
     pub struct_name: &'a str,
+}
+
+#[derive(Template)]
+#[template(path = "make/seeder.txt", escape = "none")]
+pub struct MakeSeederTpl<'a> {
+    pub name: &'a str,
 }
 
 #[derive(Template)]

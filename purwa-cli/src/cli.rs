@@ -56,11 +56,11 @@ pub enum Commands {
     #[command(name = "make:migration")]
     MakeMigration(MakeMigrationArgs),
     #[command(name = "make:seeder")]
-    MakeSeeder(DeferredArgs),
+    MakeSeeder(MakeSeederArgs),
     #[command(name = "make:policy")]
     MakePolicy(DeferredArgs),
     #[command(name = "db:seed")]
-    DbSeed(DeferredArgs),
+    DbSeed(DbSeedArgs),
     #[command(name = "inertia:setup")]
     InertiaSetup(InertiaSetupArgs),
 }
@@ -175,6 +175,22 @@ pub struct MakeMigrationArgs {
     pub name: String,
     #[arg(long, default_value = "database/migrations")]
     pub migrations_dir: PathBuf,
+}
+
+#[derive(Parser)]
+pub struct MakeSeederArgs {
+    pub name: String,
+    /// Directory for generated seeder files (default: database/seeders)
+    #[arg(long, value_name = "DIR")]
+    pub output_dir: Option<PathBuf>,
+}
+
+#[derive(Parser)]
+pub struct DbSeedArgs {
+    #[arg(long, value_name = "PATH")]
+    pub manifest_path: Option<PathBuf>,
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    pub cargo_args: Vec<OsString>,
 }
 
 #[derive(Parser)]

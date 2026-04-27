@@ -1,0 +1,15 @@
+//! Database seeders.
+
+#![forbid(unsafe_code)]
+
+use purwa::PgPool;
+
+// purwa:seeders-mods
+// purwa:end-seeders-mods
+
+pub async fn run_all(_pool: &PgPool) -> Result<(), sqlx::Error> {
+    // purwa:seeders-run
+    // purwa:end-seeders-run
+    Ok(())
+}
+

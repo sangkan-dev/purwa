@@ -306,9 +306,104 @@ S10 can start once S6 has minimal render path; finish S10 after S7–S9 for auth
 
 ---
 
-## Backlog (post-MVP — do not schedule without PRD change)
+## Phase 2 — Backlog (post-MVP)
 
-Pull from PRD §7.2: queues/jobs, mail, file storage, cache facade, events, API resources, OpenTelemetry/Prometheus, `empu tinker`.
+**Sumber scope:** [PRD.md §7.2](./PRD.md) (Phase 2, Months 7–12). Item di bawah ini **bukan** sprint bernomor; promosikan ke sprint/issue hanya setelah disepakati dan **TASK + PRD** selaras. Jangan menambah epik besar tanpa mengubah atau merujuk PRD.
+
+**Urutan kasar (bukan roadmap tanggal):** fasilitas horizontal dulu — **cache**, **events**, **observability** — lalu integrasi yang lebih berat (**queue/jobs**, **mail**, **file storage**), lalu **API resources** (transformer, pagination, versioning), terakhir **`empu tinker`** (risiko/effort tertinggi, eksplisit aspirational di PRD §4.2.6).
+
+**Dependensi epik (ringkas):**
+
+```mermaid
+flowchart LR
+  cache[CacheFacade]
+  events[EventsBus]
+  obs[Observability]
+  queue[QueueJobs]
+  mail[Mail]
+  storage[FileStorage]
+  api[ApiResources]
+  tinker[EmpuTinker]
+  cache --> queue
+  events --> queue
+  storage --> mail
+  api --> cache
+  tinker --> cache
+  tinker --> events
+```
+
+Observability bisa dikerjakan paralel dengan cache/events; Tinker mengasumsikan pola app context yang matang.
+
+### Epik: Queue & Jobs (PRD §7.2)
+
+- [ ] Crate workspace **`purwa-queue`** (atau modul setara) dengan Redis (`deadpool-redis` / stack yang disepakati).
+- [ ] Macro **`#[job]`** + registrasi + runner (retry, backoff).
+- [ ] **`empu make:job`** + dokumentasi konfigurasi Redis.
+- [ ] Penjadwal **cron** (syntax yang didokumentasikan) atau integrasi crate scheduler.
+- [ ] Tes integrasi (testcontainers Redis atau lingkungan sekali pakai).
+
+### Epik: Mail & Notifications (PRD §7.2)
+
+- [ ] Driver SMTP (**`lettre`** atau setara), konfigurasi aman (secrets, TLS).
+- [ ] Pola pengiriman notifikasi dari handler / job.
+- [ ] **Investigate / spike:** email template Svelte lewat Inertia SSR — pisahkan hasil “feasible untuk v1 Phase 2” vs “defer”.
+
+### Epik: File Storage (PRD §7.2)
+
+- [ ] Abstraksi **`object_store`** (local + S3-compatible).
+- [ ] **`empu make:disk`** (atau nama setara) + konfigurasi `purwa.toml`.
+- [ ] Dokumentasi escape hatch (upload langsung vs facade).
+
+### Epik: Caching facade (PRD §7.2)
+
+- [ ] API Laravel-like **`get` / `put` / `remember`** (dan error semantics yang jelas).
+- [ ] Backend **Moka** (in-memory) + **Redis** (opsional feature).
+- [ ] Integrasi contoh dengan **`AppState`** (selaras PRD §5.3).
+
+### Epik: Events & listeners (PRD §7.2)
+
+- [ ] Event bus berbasis **Tokio** (broadcast / channel — pilih satu pola dan dokumentasikan).
+- [ ] Macro **`#[listen]`** atau registrasi setara.
+- [ ] Dokumentasi thread-safety dan batasan async.
+
+### Epik: API resources (PRD §7.2)
+
+- [ ] Transformer JSON terstruktur (“API resource” Laravel-class).
+- [ ] Pagination **cursor** + **offset** (kontrak response stabil).
+- [ ] **API versioning** (prefix atau header — keputusan desain + docs).
+
+### Epik: Observability (PRD §7.2)
+
+- [ ] Export **OpenTelemetry** (trace) — opt-in, tidak memecahkan default app ringan.
+- [ ] Endpoint metrik **Prometheus** (opsional middleware/layer).
+- [ ] Dokumentasi deployment (env, sampler, redaction).
+
+### Epik: REPL / `empu tinker` (PRD §4.2.6, §7.2)
+
+- [ ] Spike: harness **async Tokio** + konteks app (DB, config) tanpa full interpreter Rust.
+- [ ] Perintah **`empu tinker`** + batasan eksplisit (bukan “REPL bahasa penuh”).
+- [ ] Keputusan: ship sebagai **experimental** atau tetap dokumen-only jika tidak memenuhi bar kualitas.
+
+### Celah MVP vs PRD §8.1 (audit CLI, 0.1.x)
+
+Perintah di [PRD §8.1](./PRD.md) tidak semua setara tingkat implementasi di **`purwa-cli`**:
+
+| Perintah | Status di codebase | Catatan |
+|----------|-------------------|---------|
+| `empu migrate`, `empu migrate:rollback` | Implemented | [`migrate_cmd`](purwa-cli/src/migrate_cmd.rs) |
+| `empu migrate:fresh` | Implemented | [`run_migrate_fresh`](purwa-cli/src/main.rs) |
+| `empu make:seeder` | Implemented (0.1.1) | [`generate::make_seeder`](purwa-cli/src/generate/mod.rs) |
+| `empu make:policy` | **Stub** | idem |
+| `empu db:seed` | Implemented (0.1.1) | [`runners::run_db_seed`](purwa-cli/src/runners.rs) |
+
+Keputusan produk (pilih saat promosi ke sprint):
+
+- **(A)** Tutup celah sebagai patch **0.1.x** (Laravel-parity CLI untuk seed/policy).
+- **(B)** Geser implementasi penuh ke **Phase 2** dan perbarui PRD §8.1 agar jujur tentang MVP vs roadmap.
+
+### Di luar Phase 2 sampai PRD berubah
+
+Tetap **non-goal** MVP per PRD §3.2: **GraphQL/gRPC**, **WASM macro routing**, **Windows-first dev environment**. **WebSocket framework opinionated** tetap di luar kecuali PRD diperluas.
 
 ---
 
@@ -335,13 +430,15 @@ Q1–Q4: lihat **§ Resolved decisions** di atas.
 | 2026-04-26 | Sprint 5: `validator`, `ValidatedJson`/`ValidatedForm`, `PurwaError` + 422 JSON, `empu make:request` |
 | 2026-04-26 | Sprint 6: `purwa-inertia` v1.3 protocol, `[inertia]` config, `purwa` feature `inertia` |
 | 2026-04-26 | Sprint 7: `purwa-auth` (Argon2id, `axum-login`, `CurrentUser`, `#[auth]`, policy/token stubs), `purwa` feature `auth`, `empu make:auth` |
-| 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed stubs |
+| 2026-04-26 | Sprint 8: `empu new` scaffold, Askama templates, `serve`/`dev`/`build`, `route:list` via `purwa-print-routes`, `make:{controller,service,model,migration}`, deferred seed/policy/db:seed stubs (implemented in 0.1.1 patch) |
 | 2026-04-26 | Sprint 9: `frontend/` Vite+Svelte+Inertia template, `empu inertia:setup`, `purwa-inertia` HTML shell injection + `vite_manifest`, scaffold `Welcome` + `ServeDir`, `empu build` manifest → `[inertia].asset_version`, `purwa` flattens `purwa-inertia` exports |
 | 2026-04-26 | Sprint 10: extended `PurwaError` (401/403/404/DB/internal), `respond_purwa_error` + `Error.svelte`, `CurrentUser` → `PurwaError`, `init_tracing` / JSON prod, integration tests |
 | 2026-04-26 | Sprint 11: `purwa-testing` HTTP helpers + optional `postgres` (testcontainers), `TEST_DATABASE_URL` helper; `empu new` test templates; README/AGENT Q4 |
 | 2026-04-26 | Sprint 12: `docs/{getting-started,architecture,escape-hatches,mvp-checklist}.md`, README philosophy ID+EN, `CONTRIBUTING.md`, `RELEASING.md`, GitHub issue templates, PRD §11 evidence table |
 | 2026-04-26 | crates.io: workspace `repository`/`readme` inheritance, `version = 0.1.0` on internal deps, per-crate docs.rs + keywords; `RELEASING.md` v0.1.0 publish order |
 | 2026-04-26 | `CHANGELOG.md` (Keep a Changelog) + GitHub Release steps in `RELEASING.md` |
+| 2026-04-27 | Phase 2 backlog expanded from PRD §7.2 (epics + mermaid); MVP CLI audit (seed/policy) |
+| 2026-04-27 | Patch 0.1.1 plan: `make:seeder` + `db:seed` implemented; PRD §8.1 status column |
 
 ---
 

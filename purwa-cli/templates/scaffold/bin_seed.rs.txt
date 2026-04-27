@@ -1,0 +1,24 @@
+//! Seed runner for `empu db:seed` (and manual `cargo run --bin seed`).
+
+#![forbid(unsafe_code)]
+
+use {{ rust_lib_name }} as _;
+use purwa::AppConfig;
+use purwa::PgPool;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    dotenvy::dotenv().ok();
+    purwa::init_tracing();
+
+    let cfg = AppConfig::load()?;
+    let url = cfg
+        .database_url()
+        .ok_or("database URL not configured (set [database].url or DATABASE_URL)")?;
+    let pool = PgPool::connect(&url).await?;
+
+    {{ rust_lib_name }}::database::seeders::run_all(&pool).await?;
+    eprintln!("Seed finished.");
+    Ok(())
+}
+

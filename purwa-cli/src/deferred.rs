@@ -2,8 +2,6 @@
 
 pub fn print_deferred(cmd: &str) {
     eprintln!("`empu {cmd}` is not implemented yet.");
-    eprintln!(
-        "Tracked under Purwa Sprint roadmap (TASK.md): seeders, policies, `db:seed`, full `inertia:setup`."
-    );
+    eprintln!("Tracked under Purwa Sprint roadmap (TASK.md): policies and future DX work.");
     eprintln!("Repository: https://github.com/sangkan-dev/purwa (file issues for prioritization).");
 }

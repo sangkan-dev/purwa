@@ -260,27 +260,7 @@ myapp/
 
 Empu is the Artisan equivalent for Purwa. It is a separate binary crate (`purwa-cli`) distributed as `cargo install purwa-cli`. All subcommands use `clap 4` derive API with `inquire` for interactive prompts.
 
-### 8.1 Command Reference (MVP)
-
-| Command | Description |
-|---|---|
-| `empu new <name>` | Scaffold full-stack project with Svelte + Inertia boilerplate. |
-| `empu serve` | `cargo run` wrapper with `RUST_LOG=debug` and watch-mode hints. |
-| `empu dev` | Fast-rebuild watch mode using `cargo-watch`. NOT hot-reload. |
-| `empu build` | Release build + Vite frontend build. |
-| `empu route:list` | Pretty table of all registered routes (via inventory registry). |
-| `empu make:controller <Name>` | Generate controller with optional `--resource` flag. |
-| `empu make:service <Name>` | Generate service trait + impl with DI boilerplate. |
-| `empu make:model <Name>` | Generate SQLx row type + optional SeaORM entity. |
-| `empu make:request <Name>` | Generate validated form request struct. |
-| `empu make:migration <name>` | Generate timestamped SQL migration file. |
-| `empu make:seeder <Name>` | Generate database seeder. |
-| `empu make:policy <Name>` | Generate authorization policy struct. |
-| `empu migrate` | Run pending migrations. |
-| `empu migrate:rollback` | Rollback last migration batch. |
-| `empu migrate:fresh` | Drop all tables and re-run all migrations. |
-| `empu db:seed` | Run database seeders. |
-| `empu inertia:setup` | Bootstrap Svelte + Inertia.js frontend. |
+### 8.1 Command Reference (MVP)\n+\n+The MVP focuses on **scaffolding, routing, migrations, and core generators**. Some commands are\n+listed as \"planned\" to preserve the Artisan-like DX goal, but may ship as stubs initially.\n+\n+| Command | Description | Status |\n+|---|---|---|\n+| `empu new <name>` | Scaffold full-stack project with Svelte + Inertia boilerplate. | ✅ Available |\n+| `empu serve` | `cargo run` wrapper with `RUST_LOG=debug` if unset. | ✅ Available |\n+| `empu dev` | Fast-rebuild watch mode using `cargo-watch`. NOT hot-reload. | ✅ Available |\n+| `empu build` | Release build + optional `frontend/` npm build. | ✅ Available |\n+| `empu route:list` | Pretty table of all registered routes (via inventory registry). | ✅ Available |\n+| `empu make:controller <Name>` | Generate controller stub. | ✅ Available |\n+| `empu make:service <Name>` | Generate service trait + impl stub. | ✅ Available |\n+| `empu make:model <Name>` | Generate model stub (SeaORM optional). | ✅ Available |\n+| `empu make:request <Name>` | Generate validated request DTO. | ✅ Available |\n+| `empu make:migration <name>` | Generate timestamped SQL migration files. | ✅ Available |\n+| `empu make:auth` | Generate auth scaffold + migration fixtures. | ✅ Available |\n+| `empu migrate` | Run pending migrations. | ✅ Available |\n+| `empu migrate:rollback` | Rollback one migration step. | ✅ Available |\n+| `empu migrate:fresh` | Drop all objects and re-run migrations. | ✅ Available |\n+| `empu inertia:setup` | Bootstrap Svelte + Inertia.js frontend. | ✅ Available |\n+| `empu make:seeder <Name>` | Generate database seeder. | 🟡 Planned (0.1.x) |\n+| `empu db:seed` | Run database seeders. | 🟡 Planned (0.1.x) |\n+| `empu make:policy <Name>` | Generate authorization policy struct. | 🟡 Planned (post-MVP) |\n*** End Patch
 
 ---
 

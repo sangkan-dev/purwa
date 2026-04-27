@@ -1,0 +1,12 @@
+//! {{ name }} seeder.
+
+#![forbid(unsafe_code)]
+
+use purwa::PgPool;
+
+pub async fn run(_pool: &PgPool) -> Result<(), sqlx::Error> {
+    // Example:
+    // sqlx::query("INSERT INTO ...").execute(pool).await?;
+    Ok(())
+}
+

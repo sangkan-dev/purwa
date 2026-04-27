@@ -19,7 +19,7 @@ postgres = ["dep:sqlx"]
 [dependencies]
 argon2 = { version = "0.5.3", features = ["std"] }
 axum = "0.8"
-purwa-core = { version = "0.1.0", path = "../purwa-core" }
+purwa-core = { version = "0.1.1", path = "../purwa-core" }
 axum-login = "0.18.0"
 password-hash = "0.5.0"
 rand_core = { version = "0.6.4", features = ["std"] }

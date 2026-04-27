@@ -14,6 +14,7 @@ use crate::util::write_output;
 const AUTH_RS: &str = include_str!("../../templates/make/auth.rs.txt");
 const AUTH_UP_SQL: &str = include_str!("../../templates/make/auth_up.sql");
 const AUTH_DOWN_SQL: &str = include_str!("../../templates/make/auth_down.sql");
+const SEEDERS_MOD_RS: &str = include_str!("../../templates/scaffold/database_seeders_mod.rs.txt");
 
 pub fn make_request(
     name: &str,
@@ -153,6 +154,81 @@ pub fn make_model(
         );
     }
     Ok(())
+}
+
+pub fn make_seeder(
+    name: &str,
+    output_dir: Option<PathBuf>,
+    opts: GlobalOpts,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let name = name.trim();
+    if name.is_empty() {
+        return Err("name must not be empty".into());
+    }
+    let stem = name.to_snake_case();
+    let out_dir = output_dir.unwrap_or_else(|| PathBuf::from("src/database/seeders"));
+
+    let tpl = MakeSeederTpl { name };
+    let content = tpl.render()?;
+    let file_path = out_dir.join(format!("{stem}.rs"));
+    if !opts.dry_run && file_path.exists() {
+        return Err(format!("seeder already exists at {}", file_path.display()).into());
+    }
+    write_output(&file_path, &content, opts)?;
+
+    let mod_path = out_dir.join("mod.rs");
+    if !opts.dry_run && !mod_path.exists() {
+        write_output(&mod_path, SEEDERS_MOD_RS, opts)?;
+    }
+    if !opts.dry_run {
+        let src = std::fs::read_to_string(&mod_path)
+            .map_err(|e| format!("{}: {}", mod_path.display(), e))?;
+        let updated = seeders_mod_insert(&src, &stem)?;
+        if updated != src {
+            std::fs::write(&mod_path, updated)?;
+            if opts.verbose {
+                eprintln!("Updated {}", mod_path.display());
+            }
+        }
+    }
+
+    if !opts.dry_run && !opts.verbose {
+        eprintln!("Wrote {}", file_path.display());
+    }
+    Ok(())
+}
+
+fn seeders_mod_insert(
+    src: &str,
+    stem: &str,
+) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    const MOD_BEGIN: &str = "// purwa:seeders-mods";
+    const MOD_END: &str = "// purwa:end-seeders-mods";
+    const RUN_BEGIN: &str = "// purwa:seeders-run";
+    const RUN_END: &str = "// purwa:end-seeders-run";
+
+    if !(src.contains(MOD_BEGIN)
+        && src.contains(MOD_END)
+        && src.contains(RUN_BEGIN)
+        && src.contains(RUN_END))
+    {
+        return Err(format!(
+            "seeders mod.rs is missing Purwa markers ({MOD_BEGIN}, {MOD_END}, {RUN_BEGIN}, {RUN_END})"
+        )
+        .into());
+    }
+
+    let mod_line = format!("mod {stem};");
+    let run_line = format!("    {stem}::run(pool).await?;");
+
+    let mut out = src.to_string();
+    if !out.contains(&mod_line) {
+        out = out.replace(MOD_BEGIN, &format!("{MOD_BEGIN}\n{mod_line}"));
+    }
+    if !out.contains(&run_line) {
+        out = out.replace(RUN_BEGIN, &format!("{RUN_BEGIN}\n{run_line}"));
+    }
+    Ok(out)
 }
 
 pub fn make_migration(
