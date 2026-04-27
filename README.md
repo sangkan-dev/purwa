@@ -14,6 +14,7 @@ Purwa is an opinionated Rust web framework from **Sangkan**: Laravel-class devel
 - [TASK.md](./TASK.md) — sprint plan and acceptance criteria
 - [AGENT.md](./AGENT.md) — guidelines for contributors and AI agents
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — build, test, PR expectations
+- [CHANGELOG.md](./CHANGELOG.md) — release notes (semver)
 
 ## Supported platforms
 

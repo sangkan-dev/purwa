@@ -53,10 +53,25 @@ The executable name is **`empu`**.
 
 If a step fails with “no matching package named `purwa-…`”, the dependency was not published or not yet visible — retry after the upstream crate appears on [crates.io](https://crates.io).
 
-## After the train
+## After the train (git tag + GitHub Release)
 
-1. Tag the repo: **`v0.1.0`** (or match your version).
-2. Optional: GitHub Release notes, `cargo audit`, and the security checklist in [docs/mvp-checklist.md](./docs/mvp-checklist.md).
+1. **Commit** any final docs (e.g. [CHANGELOG.md](./CHANGELOG.md)) on `main`.
+2. **Tag** the same commit you released from:
+
+   ```bash
+   git tag -a v0.1.0 -m "v0.1.0 — MVP on crates.io"
+   git push origin v0.1.0
+   ```
+
+   Use the tag name that matches `[workspace.package] version` (here **`v0.1.0`**).
+
+3. **GitHub Release:** in the repo on GitHub → **Releases** → **Draft a new release** → choose tag **`v0.1.0`** → title e.g. **`v0.1.0 — MVP`**. Paste the **[0.1.0]** section from [CHANGELOG.md](./CHANGELOG.md) into the description (Markdown). Optionally add links:
+   - crates.io: `https://crates.io/crates/purwa` (and other crates as needed)
+   - docs.rs: `https://docs.rs/purwa/0.1.0/purwa/`
+
+4. **Maintenance:** run **`cargo audit`**, and use the security checklist in [docs/mvp-checklist.md](./docs/mvp-checklist.md) before calling the release “signed off.”
+
+If your GitHub org/repo path is not **`sangkan-dev/purwa`**, update the compare/release links at the bottom of [CHANGELOG.md](./CHANGELOG.md).
 
 ## Version bump (future releases)
 
