@@ -20,11 +20,11 @@ sea-orm = ["dep:purwa-orm", "purwa-orm/sea-orm"]
 [dependencies]
 axum = "0.8"
 inventory = "0.3.24"
-purwa-auth = { version = "0.1.1", path = "../purwa-auth", optional = true }
-purwa-core = { version = "0.1.1", path = "../purwa-core" }
-purwa-inertia = { version = "0.1.1", path = "../purwa-inertia", optional = true }
-purwa-macros = { version = "0.1.1", path = "../purwa-macros" }
-purwa-orm = { version = "0.1.1", path = "../purwa-orm", optional = true }
+purwa-auth = { version = "0.2.0", path = "../purwa-auth", optional = true }
+purwa-core = { version = "0.2.0", path = "../purwa-core" }
+purwa-inertia = { version = "0.2.0", path = "../purwa-inertia", optional = true }
+purwa-macros = { version = "0.2.0", path = "../purwa-macros" }
+purwa-orm = { version = "0.2.0", path = "../purwa-orm", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }

@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "purwa"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "inventory",
@@ -2382,7 +2382,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-auth"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "argon2",
  "axum",
@@ -2402,7 +2402,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-cli"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "askama",
  "clap",
@@ -2417,7 +2417,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-core"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "config",
@@ -2437,7 +2437,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-inertia"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "purwa-core",
@@ -2450,7 +2450,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-macros"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "inventory",
  "proc-macro2",
@@ -2460,7 +2460,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-orm"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "purwa-core",
  "sea-orm",
@@ -2473,7 +2473,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-queue"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "chrono",
  "cron",
@@ -2492,7 +2492,7 @@ dependencies = [
 
 [[package]]
 name = "purwa-testing"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "axum",
  "bytes",

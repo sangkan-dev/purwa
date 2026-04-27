@@ -9,6 +9,15 @@ Workspace crates (`purwa`, `purwa-core`, `purwa-macros`, `purwa-inertia`, `purwa
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-27
+
+### Added
+
+- Queue & Jobs (Phase 2 MVP): `purwa-queue` with Redis-backed enqueue/worker, retries/backoff, and cron scheduling.
+- CLI: `empu queue:work`, `empu queue:cron`, and `empu make:job` generator.
+- Proc-macros: `#[job]` and `#[cron]` for inventory-based auto-registration.
+- Docs: `docs/queue.md` expanded with queue/jobs/cron usage and testing notes.
+
 ## [0.1.1] - 2026-04-27
 
 ### Added
@@ -36,6 +45,7 @@ First public **MVP** on [crates.io](https://crates.io): aligned **0.1.0** releas
 
 `purwa-macros`, `purwa-core`, `purwa-orm`, `purwa-inertia`, `purwa-auth`, `purwa-testing`, `purwa`, `purwa-cli` at **v0.1.0**.
 
-[Unreleased]: https://github.com/sangkan-dev/purwa/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/sangkan-dev/purwa/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/sangkan-dev/purwa/releases/tag/v0.2.0
 [0.1.1]: https://github.com/sangkan-dev/purwa/releases/tag/v0.1.1
 [0.1.0]: https://github.com/sangkan-dev/purwa/releases/tag/v0.1.0

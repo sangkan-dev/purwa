@@ -22,8 +22,8 @@ askama = "0.12.1"
 clap = { version = "4.6.1", features = ["derive", "env"] }
 heck = "0.5.0"
 inquire = "0.7.5"
-purwa-core = { version = "0.1.1", path = "../purwa-core" }
-purwa-orm = { version = "0.1.1", path = "../purwa-orm" }
+purwa-core = { version = "0.2.0", path = "../purwa-core" }
+purwa-orm = { version = "0.2.0", path = "../purwa-orm" }
 serde_json = "1.0.149"
 toml_edit = "0.22.22"
 tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }
