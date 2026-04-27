@@ -72,6 +72,25 @@ pub struct DatabaseSection {
     pub url: Option<String>,
 }
 
+/// Top-level `[queue]` section in `purwa.toml` (Phase 2).
+#[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
+pub struct QueueSection {
+    /// Redis connection URL (optional if `REDIS_URL` is set at runtime).
+    pub redis_url: Option<String>,
+    /// Queue name used for key prefixes.
+    pub name: String,
+}
+
+impl Default for QueueSection {
+    fn default() -> Self {
+        Self {
+            redis_url: None,
+            name: "default".to_string(),
+        }
+    }
+}
+
 /// Top-level `[inertia]` section — asset versioning for Inertia.js (Sprint 6).
 #[derive(Debug, Clone, Deserialize)]
 #[serde(default)]
@@ -95,6 +114,7 @@ pub struct AppConfig {
     pub app: AppSection,
     pub server: ServerSection,
     pub database: DatabaseSection,
+    pub queue: QueueSection,
     pub inertia: InertiaSection,
 }
 
@@ -137,6 +157,22 @@ impl AppConfig {
             }
         }
         std::env::var("DATABASE_URL")
+            .ok()
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+    }
+
+    /// Resolved Redis connection URL for queue workers.
+    ///
+    /// Order: `[queue].redis_url` from config (file + `PURWA_QUEUE__REDIS_URL`), then `REDIS_URL`.
+    pub fn queue_redis_url(&self) -> Option<String> {
+        if let Some(ref u) = self.queue.redis_url {
+            let t = u.trim();
+            if !t.is_empty() {
+                return Some(t.to_string());
+            }
+        }
+        std::env::var("REDIS_URL")
             .ok()
             .map(|s| s.trim().to_string())
             .filter(|s| !s.is_empty())

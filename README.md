@@ -9,6 +9,7 @@ Purwa is an opinionated Rust web framework from **Sangkan**: Laravel-class devel
 - [Getting started](./docs/getting-started.md) — ~15 minute first run (`empu new`, `cargo run`, `/health`)
 - [Architecture](./docs/architecture.md) — crates, request flow, config, SQLx vs SeaORM
 - [Escape hatches](./docs/escape-hatches.md) — raw Axum/Tower, `Router` + state, SQLx
+- [Queue](./docs/queue.md) — Redis-backed jobs (Phase 2 MVP)
 - [MVP checklist](./docs/mvp-checklist.md) — PRD §11 verification pointers
 - [PRD.md](./PRD.md) — product requirements and architecture
 - [TASK.md](./TASK.md) — sprint plan and acceptance criteria

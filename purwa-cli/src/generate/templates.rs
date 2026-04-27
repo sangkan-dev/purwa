@@ -16,6 +16,7 @@ pub struct ScaffoldCargoToml<'a> {
     pub purwa_dep: &'a str,
     pub purwa_testing_dep: &'a str,
     pub purwa_orm_dep: &'a str,
+    pub purwa_queue_dep: &'a str,
     pub features_csv: &'a str,
     pub inertia: bool,
 }
@@ -63,12 +64,22 @@ pub struct ScaffoldBinSeed<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "scaffold/bin_queue_worker.rs.txt", escape = "none")]
+pub struct ScaffoldBinQueueWorker<'a> {
+    pub rust_lib_name: &'a str,
+}
+
+#[derive(Template)]
 #[template(path = "scaffold/database_seeders_mod.rs.txt", escape = "none")]
 pub struct ScaffoldDatabaseSeedersMod;
 
 #[derive(Template)]
 #[template(path = "scaffold/database_mod.rs.txt", escape = "none")]
 pub struct ScaffoldDatabaseMod;
+
+#[derive(Template)]
+#[template(path = "scaffold/app_jobs_mod.rs.txt", escape = "none")]
+pub struct ScaffoldAppJobsMod;
 
 #[derive(Template)]
 #[template(path = "scaffold/routes_health.rs.txt", escape = "none")]
@@ -155,6 +166,13 @@ pub struct MakeModelTpl<'a> {
 #[template(path = "make/seeder.txt", escape = "none")]
 pub struct MakeSeederTpl<'a> {
     pub name: &'a str,
+}
+
+#[derive(Template)]
+#[template(path = "make/job.txt", escape = "none")]
+pub struct MakeJobTpl<'a> {
+    pub name: &'a str,
+    pub type_string: &'a str,
 }
 
 #[derive(Template)]

@@ -7,7 +7,7 @@ use std::process::{Command, Stdio};
 use serde_json::Value;
 use toml_edit::DocumentMut;
 
-use crate::cli::{BuildArgs, DbSeedArgs, DevArgs, RouteListArgs, ServeArgs};
+use crate::cli::{BuildArgs, DbSeedArgs, DevArgs, QueueWorkArgs, RouteListArgs, ServeArgs};
 
 fn cargo_bin() -> OsString {
     std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into())
@@ -192,6 +192,27 @@ pub fn run_db_seed(args: DbSeedArgs) -> Result<(), Box<dyn std::error::Error + S
     let st = cmd.status()?;
     if !st.success() {
         return Err("db:seed failed (expected a `seed` bin in this project)".into());
+    }
+    Ok(())
+}
+
+pub fn run_queue_work(args: QueueWorkArgs) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let mut cmd = Command::new(cargo_bin());
+    cmd.args(["run", "--bin", "queue-worker"]);
+    if let Some(m) = &args.manifest_path {
+        cmd.args([
+            "--manifest-path",
+            m.to_str().ok_or("manifest path must be UTF-8")?,
+        ]);
+    }
+    for a in &args.cargo_args {
+        cmd.arg(a);
+    }
+    cmd.stdout(Stdio::inherit());
+    cmd.stderr(Stdio::inherit());
+    let st = cmd.status()?;
+    if !st.success() {
+        return Err("queue:work failed (expected a `queue-worker` bin in this project)".into());
     }
     Ok(())
 }

@@ -1,0 +1,25 @@
+[package]
+name = "purwa-queue"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+readme.workspace = true
+documentation = "https://docs.rs/purwa-queue"
+description = "Redis-backed job queue for Purwa (post-MVP Phase 2)"
+keywords = ["purwa", "queue", "redis", "jobs", "worker"]
+categories = ["web-programming", "asynchronous"]
+
+[dependencies]
+deadpool-redis = "0.22.0"
+redis = { version = "0.32.5", default-features = false, features = ["tokio-comp"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+time = { version = "0.3.44", default-features = false, features = ["std"] }
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread", "time"] }
+tracing = "0.1.44"
+
+[dev-dependencies]
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread"] }

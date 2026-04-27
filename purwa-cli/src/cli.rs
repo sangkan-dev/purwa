@@ -57,10 +57,14 @@ pub enum Commands {
     MakeMigration(MakeMigrationArgs),
     #[command(name = "make:seeder")]
     MakeSeeder(MakeSeederArgs),
+    #[command(name = "make:job")]
+    MakeJob(MakeJobArgs),
     #[command(name = "make:policy")]
     MakePolicy(DeferredArgs),
     #[command(name = "db:seed")]
     DbSeed(DbSeedArgs),
+    #[command(name = "queue:work")]
+    QueueWork(QueueWorkArgs),
     #[command(name = "inertia:setup")]
     InertiaSetup(InertiaSetupArgs),
 }
@@ -186,7 +190,23 @@ pub struct MakeSeederArgs {
 }
 
 #[derive(Parser)]
+pub struct MakeJobArgs {
+    pub name: String,
+    /// Directory for generated job files (default: src/app/jobs)
+    #[arg(long, value_name = "DIR")]
+    pub output_dir: Option<PathBuf>,
+}
+
+#[derive(Parser)]
 pub struct DbSeedArgs {
+    #[arg(long, value_name = "PATH")]
+    pub manifest_path: Option<PathBuf>,
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    pub cargo_args: Vec<OsString>,
+}
+
+#[derive(Parser)]
+pub struct QueueWorkArgs {
     #[arg(long, value_name = "PATH")]
     pub manifest_path: Option<PathBuf>,
     #[arg(trailing_var_arg = true, allow_hyphen_values = true)]

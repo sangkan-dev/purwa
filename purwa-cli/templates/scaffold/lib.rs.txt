@@ -12,6 +12,10 @@ pub mod routes {
 pub mod database {
     pub mod seeders;
 }
+
+pub mod app {
+    pub mod jobs;
+}
 {% if inertia %}
 
 use std::sync::Arc;

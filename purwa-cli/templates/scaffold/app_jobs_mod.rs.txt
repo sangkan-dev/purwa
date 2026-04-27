@@ -1,0 +1,13 @@
+//! Application jobs (used by `queue-worker`).
+
+#![forbid(unsafe_code)]
+
+// purwa:jobs-mods
+// purwa:end-jobs-mods
+
+pub fn register_all(builder: purwa_queue::JobRegistryBuilder) -> purwa_queue::JobRegistryBuilder {
+    // purwa:jobs-register
+    // purwa:end-jobs-register
+    builder
+}
+

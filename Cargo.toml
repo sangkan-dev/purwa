@@ -9,6 +9,7 @@ members = [
     "purwa-auth",
     "purwa-cli",
     "purwa-testing",
+    "purwa-queue",
 ]
 
 [workspace.package]

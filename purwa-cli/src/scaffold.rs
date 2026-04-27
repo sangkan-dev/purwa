@@ -9,10 +9,11 @@ use inquire::Confirm;
 use crate::cli::NewArgs;
 use crate::frontend::write_frontend_tree;
 use crate::generate::{
-    ScaffoldBinSeed, ScaffoldCargoToml, ScaffoldDatabaseMod, ScaffoldDatabaseSeedersMod,
-    ScaffoldEnvExample, ScaffoldHealth, ScaffoldLibRs, ScaffoldMainRs, ScaffoldPrintRoutes,
-    ScaffoldPurwaToml, ScaffoldReadme, ScaffoldTestNoDb, ScaffoldTestPostgres, ScaffoldWelcome,
-    crate_package_name, features_csv, purwa_dep_toml, purwa_orm_dep_toml, purwa_testing_dep_toml,
+    ScaffoldAppJobsMod, ScaffoldBinQueueWorker, ScaffoldBinSeed, ScaffoldCargoToml,
+    ScaffoldDatabaseMod, ScaffoldDatabaseSeedersMod, ScaffoldEnvExample, ScaffoldHealth,
+    ScaffoldLibRs, ScaffoldMainRs, ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme,
+    ScaffoldTestNoDb, ScaffoldTestPostgres, ScaffoldWelcome, crate_package_name, features_csv,
+    purwa_dep_toml, purwa_orm_dep_toml, purwa_queue_dep_toml, purwa_testing_dep_toml,
     rust_lib_name_from_package,
 };
 use crate::util::{GlobalOpts, write_output};
@@ -79,6 +80,7 @@ pub fn run_new(
     let dep_inner = purwa_dep_toml(purwa_path.as_deref());
     let purwa_testing_dep = purwa_testing_dep_toml(purwa_path.as_deref());
     let purwa_orm_dep = purwa_orm_dep_toml(purwa_path.as_deref());
+    let purwa_queue_dep = purwa_queue_dep_toml(purwa_path.as_deref());
 
     let title = pkg.to_title_case();
     let app_name = lib.clone();
@@ -88,6 +90,7 @@ pub fn run_new(
         purwa_dep: &dep_inner,
         purwa_testing_dep: &purwa_testing_dep,
         purwa_orm_dep: &purwa_orm_dep,
+        purwa_queue_dep: &purwa_queue_dep,
         features_csv: &features_csv,
         inertia,
     }
@@ -113,9 +116,14 @@ pub fn run_new(
         rust_lib_name: &lib,
     }
     .render()?;
+    let queue_worker_bin = ScaffoldBinQueueWorker {
+        rust_lib_name: &lib,
+    }
+    .render()?;
     let health_rs = ScaffoldHealth.render()?;
     let database_mod = ScaffoldDatabaseMod.render()?;
     let seeders_mod = ScaffoldDatabaseSeedersMod.render()?;
+    let app_jobs_mod = ScaffoldAppJobsMod.render()?;
     let purwa_toml = ScaffoldPurwaToml {
         title: &title,
         app_name: &app_name,
@@ -155,12 +163,14 @@ pub fn run_new(
         (root.join("src/main.rs"), main_rs),
         (root.join("src/bin/purwa-print-routes.rs"), print_rs),
         (root.join("src/bin/seed.rs"), seed_bin),
+        (root.join("src/bin/queue-worker.rs"), queue_worker_bin),
         (root.join("src/routes/health.rs"), health_rs),
         (root.join("src/database/mod.rs"), database_mod),
         (root.join("purwa.toml"), purwa_toml),
         (root.join(".env.example"), env_ex),
         (root.join("README.md"), readme),
         (root.join("src/database/seeders/mod.rs"), seeders_mod),
+        (root.join("src/app/jobs/mod.rs"), app_jobs_mod),
         (root.join("tests/no_db_smoke.rs"), test_no_db),
         (root.join("tests/postgres_optional.rs"), test_postgres),
     ];
