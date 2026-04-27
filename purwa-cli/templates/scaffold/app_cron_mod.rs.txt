@@ -1,0 +1,9 @@
+//! Application cron schedules (loaded by `queue-cron`).
+
+#![forbid(unsafe_code)]
+
+// Export modules so schedule files compile and can submit inventory entries.
+// (Auto-registration is done via `#[cron]` proc-macro.)
+// purwa:cron-mods
+// purwa:end-cron-mods
+

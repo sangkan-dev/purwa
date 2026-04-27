@@ -9,12 +9,12 @@ use inquire::Confirm;
 use crate::cli::NewArgs;
 use crate::frontend::write_frontend_tree;
 use crate::generate::{
-    ScaffoldAppJobsMod, ScaffoldBinQueueWorker, ScaffoldBinSeed, ScaffoldCargoToml,
-    ScaffoldDatabaseMod, ScaffoldDatabaseSeedersMod, ScaffoldEnvExample, ScaffoldHealth,
-    ScaffoldLibRs, ScaffoldMainRs, ScaffoldPrintRoutes, ScaffoldPurwaToml, ScaffoldReadme,
-    ScaffoldTestNoDb, ScaffoldTestPostgres, ScaffoldWelcome, crate_package_name, features_csv,
-    purwa_dep_toml, purwa_orm_dep_toml, purwa_queue_dep_toml, purwa_testing_dep_toml,
-    rust_lib_name_from_package,
+    ScaffoldAppCronMod, ScaffoldAppJobsMod, ScaffoldBinQueueCron, ScaffoldBinQueueWorker,
+    ScaffoldBinSeed, ScaffoldCargoToml, ScaffoldDatabaseMod, ScaffoldDatabaseSeedersMod,
+    ScaffoldEnvExample, ScaffoldHealth, ScaffoldLibRs, ScaffoldMainRs, ScaffoldPrintRoutes,
+    ScaffoldPurwaToml, ScaffoldReadme, ScaffoldTestNoDb, ScaffoldTestPostgres, ScaffoldWelcome,
+    crate_package_name, features_csv, purwa_dep_toml, purwa_orm_dep_toml, purwa_queue_dep_toml,
+    purwa_testing_dep_toml, rust_lib_name_from_package,
 };
 use crate::util::{GlobalOpts, write_output};
 
@@ -120,10 +120,15 @@ pub fn run_new(
         rust_lib_name: &lib,
     }
     .render()?;
+    let queue_cron_bin = ScaffoldBinQueueCron {
+        rust_lib_name: &lib,
+    }
+    .render()?;
     let health_rs = ScaffoldHealth.render()?;
     let database_mod = ScaffoldDatabaseMod.render()?;
     let seeders_mod = ScaffoldDatabaseSeedersMod.render()?;
     let app_jobs_mod = ScaffoldAppJobsMod.render()?;
+    let app_cron_mod = ScaffoldAppCronMod.render()?;
     let purwa_toml = ScaffoldPurwaToml {
         title: &title,
         app_name: &app_name,
@@ -164,6 +169,7 @@ pub fn run_new(
         (root.join("src/bin/purwa-print-routes.rs"), print_rs),
         (root.join("src/bin/seed.rs"), seed_bin),
         (root.join("src/bin/queue-worker.rs"), queue_worker_bin),
+        (root.join("src/bin/queue-cron.rs"), queue_cron_bin),
         (root.join("src/routes/health.rs"), health_rs),
         (root.join("src/database/mod.rs"), database_mod),
         (root.join("purwa.toml"), purwa_toml),
@@ -171,6 +177,7 @@ pub fn run_new(
         (root.join("README.md"), readme),
         (root.join("src/database/seeders/mod.rs"), seeders_mod),
         (root.join("src/app/jobs/mod.rs"), app_jobs_mod),
+        (root.join("src/app/cron/mod.rs"), app_cron_mod),
         (root.join("tests/no_db_smoke.rs"), test_no_db),
         (root.join("tests/postgres_optional.rs"), test_postgres),
     ];

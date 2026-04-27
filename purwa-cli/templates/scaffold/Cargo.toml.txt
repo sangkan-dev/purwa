@@ -23,6 +23,10 @@ path = "src/bin/seed.rs"
 name = "queue-worker"
 path = "src/bin/queue-worker.rs"
 
+[[bin]]
+name = "queue-cron"
+path = "src/bin/queue-cron.rs"
+
 [dependencies]
 axum = "0.8"
 dotenvy = "0.15"

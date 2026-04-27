@@ -65,6 +65,8 @@ pub enum Commands {
     DbSeed(DbSeedArgs),
     #[command(name = "queue:work")]
     QueueWork(QueueWorkArgs),
+    #[command(name = "queue:cron")]
+    QueueCron(QueueCronArgs),
     #[command(name = "inertia:setup")]
     InertiaSetup(InertiaSetupArgs),
 }
@@ -207,6 +209,14 @@ pub struct DbSeedArgs {
 
 #[derive(Parser)]
 pub struct QueueWorkArgs {
+    #[arg(long, value_name = "PATH")]
+    pub manifest_path: Option<PathBuf>,
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    pub cargo_args: Vec<OsString>,
+}
+
+#[derive(Parser)]
+pub struct QueueCronArgs {
     #[arg(long, value_name = "PATH")]
     pub manifest_path: Option<PathBuf>,
     #[arg(trailing_var_arg = true, allow_hyphen_values = true)]

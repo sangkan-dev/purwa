@@ -171,6 +171,99 @@ pub fn job(args: TokenStream, input: TokenStream) -> TokenStream {
     job_impl(args, input)
 }
 
+/// `#[cron]` — register a scheduled enqueue into `purwa-queue`'s inventory.
+///
+/// Usage on a module item (any item; macro expands into an `inventory::submit!`):
+///
+/// ```ignore
+/// #[cron(
+///   name = "nightly",
+///   cron = "0 2 * * *",
+///   job = "send-email",
+///   payload = "{\"to\":\"a@b.com\"}"
+/// )]
+/// pub const _SCHEDULE: () = ();
+/// ```
+#[proc_macro_attribute]
+pub fn cron(args: TokenStream, input: TokenStream) -> TokenStream {
+    cron_impl(args, input)
+}
+
+fn cron_impl(args: TokenStream, input: TokenStream) -> TokenStream {
+    struct CronArgs {
+        name: LitStr,
+        cron: LitStr,
+        job: LitStr,
+        payload: LitStr,
+    }
+
+    impl Parse for CronArgs {
+        fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+            fn parse_kv(input: ParseStream<'_>) -> syn::Result<(Ident, LitStr)> {
+                let key: Ident = input.parse()?;
+                input.parse::<syn::Token![=]>()?;
+                let v: LitStr = input.parse()?;
+                Ok((key, v))
+            }
+
+            let mut name: Option<LitStr> = None;
+            let mut cron: Option<LitStr> = None;
+            let mut job: Option<LitStr> = None;
+            let mut payload: Option<LitStr> = None;
+
+            while !input.is_empty() {
+                let (k, v) = parse_kv(input)?;
+                if k == "name" {
+                    name = Some(v);
+                } else if k == "cron" {
+                    cron = Some(v);
+                } else if k == "job" {
+                    job = Some(v);
+                } else if k == "payload" {
+                    payload = Some(v);
+                } else {
+                    return Err(syn::Error::new(k.span(), "unknown cron arg"));
+                }
+                if input.peek(syn::Token![,]) {
+                    input.parse::<syn::Token![,]>()?;
+                }
+            }
+
+            Ok(CronArgs {
+                name: name.ok_or_else(|| syn::Error::new(input.span(), "missing `name`"))?,
+                cron: cron.ok_or_else(|| syn::Error::new(input.span(), "missing `cron`"))?,
+                job: job.ok_or_else(|| syn::Error::new(input.span(), "missing `job`"))?,
+                payload: payload
+                    .ok_or_else(|| syn::Error::new(input.span(), "missing `payload`"))?,
+            })
+        }
+    }
+
+    let CronArgs {
+        name,
+        cron,
+        job,
+        payload,
+    } = parse_macro_input!(args as CronArgs);
+
+    let item: syn::Item = parse_macro_input!(input as syn::Item);
+
+    let expanded = quote! {
+        #item
+
+        ::purwa_queue::inventory::submit! {
+            ::purwa_queue::CronEntry {
+                name: #name,
+                cron: #cron,
+                job_type: #job,
+                payload_json: #payload,
+            }
+        }
+    };
+
+    expanded.into()
+}
+
 fn job_impl(args: TokenStream, input: TokenStream) -> TokenStream {
     #[derive(Default)]
     struct JobArgs {

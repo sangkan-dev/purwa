@@ -1,0 +1,26 @@
+//! Queue cron scheduler for `empu queue:cron`.
+
+#![forbid(unsafe_code)]
+
+use {{ rust_lib_name }} as _;
+use purwa::AppConfig;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    dotenvy::dotenv().ok();
+    purwa::init_tracing();
+
+    let cfg = AppConfig::load()?;
+    let redis_url = cfg
+        .queue_redis_url()
+        .ok_or("queue redis_url not configured (set [queue].redis_url or REDIS_URL)")?;
+
+    let qcfg = purwa_queue::QueueConfig::new(redis_url, cfg.queue.name.clone());
+    let queue = purwa_queue::Queue::connect(qcfg)?;
+
+    let _ = stringify!({{ rust_lib_name }}::app::cron);
+    let scheduler = purwa_queue::Scheduler::from_inventory(&queue);
+    scheduler.run().await?;
+    Ok(())
+}
+

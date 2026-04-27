@@ -70,6 +70,12 @@ pub struct ScaffoldBinQueueWorker<'a> {
 }
 
 #[derive(Template)]
+#[template(path = "scaffold/bin_queue_cron.rs.txt", escape = "none")]
+pub struct ScaffoldBinQueueCron<'a> {
+    pub rust_lib_name: &'a str,
+}
+
+#[derive(Template)]
 #[template(path = "scaffold/database_seeders_mod.rs.txt", escape = "none")]
 pub struct ScaffoldDatabaseSeedersMod;
 
@@ -80,6 +86,10 @@ pub struct ScaffoldDatabaseMod;
 #[derive(Template)]
 #[template(path = "scaffold/app_jobs_mod.rs.txt", escape = "none")]
 pub struct ScaffoldAppJobsMod;
+
+#[derive(Template)]
+#[template(path = "scaffold/app_cron_mod.rs.txt", escape = "none")]
+pub struct ScaffoldAppCronMod;
 
 #[derive(Template)]
 #[template(path = "scaffold/routes_health.rs.txt", escape = "none")]

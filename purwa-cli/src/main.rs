@@ -59,6 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Some(Commands::MakePolicy(_)) => deferred::print_deferred("make:policy"),
         Some(Commands::DbSeed(args)) => runners::run_db_seed(args)?,
         Some(Commands::QueueWork(args)) => runners::run_queue_work(args)?,
+        Some(Commands::QueueCron(args)) => runners::run_queue_cron(args)?,
         Some(Commands::InertiaSetup(args)) => frontend::run_inertia_setup(args, opts)?,
         None => {
             eprintln!(

@@ -21,12 +21,15 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
+use chrono::{DateTime, FixedOffset, Utc};
+use cron::Schedule;
 use deadpool_redis::{Config as RedisConfig, Pool, Runtime};
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::str::FromStr;
 use thiserror::Error;
-use time::OffsetDateTime;
+use time::{OffsetDateTime, UtcOffset};
 
 pub type JobHandleFuture = Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>;
 pub type JobHandleFn = fn(Value, JobContext) -> JobHandleFuture;
@@ -38,6 +41,26 @@ pub struct JobHandlerEntry {
 }
 
 inventory::collect!(JobHandlerEntry);
+
+#[derive(Clone)]
+pub struct CronEntry {
+    pub name: &'static str,
+    /// 5-field crontab: `min hour dom mon dow` (evaluated in UTC by default).
+    pub cron: &'static str,
+    pub job_type: &'static str,
+    /// JSON payload literal for the job.
+    pub payload_json: &'static str,
+}
+
+inventory::collect!(CronEntry);
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+struct CronStoredEntry {
+    name: String,
+    cron: String,
+    job_type: String,
+    payload: Value,
+}
 
 /// Queue configuration.
 #[derive(Clone, Debug)]
@@ -129,6 +152,8 @@ pub enum QueueError {
     JobFailed(String),
     #[error("invalid queue config: {0}")]
     InvalidConfig(String),
+    #[error("cron: {0}")]
+    Cron(String),
 }
 
 type HandlerFn = Arc<dyn Fn(Value, JobContext) -> JobHandleFuture + Send + Sync>;
@@ -333,6 +358,152 @@ impl Worker {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct SchedulerConfig {
+    pub poll_interval: Duration,
+    pub max_batch: usize,
+    pub timezone: UtcOffset,
+}
+
+impl Default for SchedulerConfig {
+    fn default() -> Self {
+        Self {
+            poll_interval: Duration::from_secs(1),
+            max_batch: 100,
+            timezone: UtcOffset::UTC,
+        }
+    }
+}
+
+pub struct Scheduler {
+    cfg: QueueConfig,
+    pool: Pool,
+    scfg: SchedulerConfig,
+}
+
+impl Scheduler {
+    pub fn new(queue: &Queue, scfg: SchedulerConfig) -> Self {
+        Self {
+            cfg: queue.cfg.clone(),
+            pool: queue.pool.clone(),
+            scfg,
+        }
+    }
+
+    pub fn from_inventory(queue: &Queue) -> Self {
+        Self::new(queue, SchedulerConfig::default())
+    }
+
+    pub async fn run(&self) -> Result<(), QueueError> {
+        loop {
+            self.run_once().await?;
+            tokio::time::sleep(self.scfg.poll_interval).await;
+        }
+    }
+
+    pub async fn run_once(&self) -> Result<(), QueueError> {
+        self.sync_inventory_schedules().await?;
+        self.tick_due().await
+    }
+
+    async fn sync_inventory_schedules(&self) -> Result<(), QueueError> {
+        let cron_key = redis_keys::queue_cron_zset(&self.cfg.name);
+        let now = OffsetDateTime::now_utc().to_offset(self.scfg.timezone);
+        let mut conn = self.pool.get().await?;
+
+        for e in inventory::iter::<CronEntry> {
+            let payload: Value = serde_json::from_str(e.payload_json)?;
+            let stored = CronStoredEntry {
+                name: e.name.to_string(),
+                cron: e.cron.to_string(),
+                job_type: e.job_type.to_string(),
+                payload,
+            };
+            let raw = serde_json::to_string(&stored)?;
+            let next = next_run_unix_ms(&stored.cron, now, self.scfg.timezone)?;
+            let _: i64 = redis::cmd("ZADD")
+                .arg(&cron_key)
+                .arg(next)
+                .arg(raw)
+                .query_async(&mut conn)
+                .await?;
+        }
+        Ok(())
+    }
+
+    async fn tick_due(&self) -> Result<(), QueueError> {
+        let cron_key = redis_keys::queue_cron_zset(&self.cfg.name);
+        let now_ms = OffsetDateTime::now_utc().unix_timestamp_nanos() / 1_000_000;
+        let mut conn = self.pool.get().await?;
+
+        let raws: Vec<String> = redis::cmd("ZRANGEBYSCORE")
+            .arg(&cron_key)
+            .arg("-inf")
+            .arg(now_ms)
+            .arg("LIMIT")
+            .arg(0)
+            .arg(self.scfg.max_batch)
+            .query_async(&mut conn)
+            .await?;
+        if raws.is_empty() {
+            return Ok(());
+        }
+
+        for raw in raws {
+            // Remove first to avoid double fire on crash between enqueue/reschedule (best-effort).
+            let _: i64 = conn.zrem(&cron_key, &raw).await?;
+            let stored: CronStoredEntry = serde_json::from_str(&raw)?;
+
+            let env = JobEnvelope::new(stored.job_type.clone(), stored.payload.clone());
+            let env_raw = serde_json::to_string(&env)?;
+            let list_key = redis_keys::queue_list(&self.cfg.name);
+            conn.lpush::<_, _, ()>(&list_key, env_raw).await?;
+
+            let now = OffsetDateTime::now_utc().to_offset(self.scfg.timezone);
+            let next = next_run_unix_ms(&stored.cron, now, self.scfg.timezone)?;
+            let _: i64 = redis::cmd("ZADD")
+                .arg(&cron_key)
+                .arg(next)
+                .arg(raw)
+                .query_async(&mut conn)
+                .await?;
+        }
+        Ok(())
+    }
+}
+
+fn normalize_cron_5_to_6(expr: &str) -> String {
+    // `cron` crate expects a seconds field; prefix `0` seconds.
+    format!("0 {}", expr.trim())
+}
+
+fn next_run_unix_ms(expr5: &str, now: OffsetDateTime, tz: UtcOffset) -> Result<i128, QueueError> {
+    let expr6 = normalize_cron_5_to_6(expr5);
+    let schedule = Schedule::from_str(&expr6).map_err(|e| QueueError::Cron(e.to_string()))?;
+    let after = to_chrono_fixed_offset(now.to_offset(tz), tz)?;
+    let next = schedule
+        .after(&after)
+        .next()
+        .ok_or_else(|| QueueError::Cron("no next run".into()))?;
+    let nanos =
+        next.timestamp_nanos_opt()
+            .ok_or_else(|| QueueError::Cron("next run timestamp overflow".into()))? as i128;
+    Ok(nanos / 1_000_000)
+}
+
+fn to_chrono_fixed_offset(
+    t: OffsetDateTime,
+    tz: UtcOffset,
+) -> Result<DateTime<FixedOffset>, QueueError> {
+    let secs = t.unix_timestamp();
+    let nanos = t.nanosecond();
+    let offset = FixedOffset::east_opt(tz.whole_seconds())
+        .ok_or_else(|| QueueError::Cron("invalid utc offset".into()))?;
+    let utc = DateTime::<Utc>::from_timestamp(secs, nanos)
+        .ok_or_else(|| QueueError::Cron("invalid timestamp".into()))?;
+    Ok(utc.with_timezone(&offset))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -351,6 +522,15 @@ mod tests {
         JobHandlerEntry {
             job_type: "ok-job",
             handle: testcontainers_ok_job_handle,
+        }
+    }
+
+    inventory::submit! {
+        CronEntry {
+            name: "every-minute",
+            cron: "* * * * *",
+            job_type: "ok-job",
+            payload_json: "{}",
         }
     }
 
@@ -382,6 +562,25 @@ mod tests {
 
         q.enqueue(&OkJob).await.unwrap();
         w.run_once().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn cron_smoke_via_test_redis_url_env() {
+        let Ok(url) = std::env::var("TEST_REDIS_URL") else {
+            return;
+        };
+        let url = url.trim().to_string();
+        if url.is_empty() {
+            return;
+        }
+
+        let cfg = QueueConfig {
+            pop_timeout: Duration::from_millis(50),
+            ..QueueConfig::new(url, "test")
+        };
+        let q = Queue::connect(cfg).unwrap();
+        let s = Scheduler::from_inventory(&q);
+        s.run_once().await.unwrap();
     }
 
     #[tokio::test]

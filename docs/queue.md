@@ -84,5 +84,32 @@ impl SendEmail {
 
 ### Testing
 
-- **Local Redis / CI service**: set `TEST_REDIS_URL` and run `cargo test -p purwa-queue`.\n+- **Docker testcontainers**: there is an ignored test you can run explicitly:\n+\n+```bash\n+cargo test -p purwa-queue -- --ignored\n+```\n 
+- **Local Redis / CI service**: set `TEST_REDIS_URL` and run `cargo test -p purwa-queue`.
+- **Docker testcontainers**: there is an ignored test you can run explicitly:
+
+```bash
+cargo test -p purwa-queue -- --ignored
+```
+
+### Cron scheduling
+
+Purwa provides a minimal cron scheduler that enqueues jobs on a schedule.
+
+- **Syntax**: 5-field crontab: `min hour dom mon dow`
+- **Storage**: Redis zset `queue:{name}:cron`
+- **Runner**: `empu queue:cron` (runs `cargo run --bin queue-cron`)
+
+Declare a schedule (auto-register via `inventory`):
+
+```rust
+use purwa::cron;
+
+#[cron(
+  name = "every-minute",
+  cron = "* * * * *",
+  job = "ok-job",
+  payload = "{}"
+)]
+pub const _SCHEDULE: () = ();
+```
 
