@@ -5,7 +5,7 @@ use quote::{format_ident, quote};
 use syn::parse::{Parse, ParseStream};
 use syn::parse_macro_input;
 use syn::spanned::Spanned;
-use syn::{Attribute, Ident, ItemFn, ItemMod, LitStr, Type};
+use syn::{Attribute, Ident, ItemFn, ItemMod, ItemStruct, LitStr, Type};
 
 /// `#[auth(Backend)]` — require a logged-in session for handlers with **no** parameters.
 ///
@@ -152,6 +152,95 @@ fn route_method_macro(
                 path: #path,
                 handler_label: #handler_label_static,
                 install: ::core::option::Option::Some(#install_fn),
+            }
+        }
+    };
+
+    expanded.into()
+}
+
+/// `#[job]` — register a job payload + handler into `purwa-queue`'s inventory.
+///
+/// Apply it to a payload struct and implement an inherent async method:
+///
+/// - `impl MyJob { pub async fn perform(self, ctx: purwa_queue::JobContext) -> Result<(), String> { ... } }`
+///
+/// Optional args: `#[job(type = "send-email")]`.
+#[proc_macro_attribute]
+pub fn job(args: TokenStream, input: TokenStream) -> TokenStream {
+    job_impl(args, input)
+}
+
+fn job_impl(args: TokenStream, input: TokenStream) -> TokenStream {
+    #[derive(Default)]
+    struct JobArgs {
+        ty: Option<LitStr>,
+    }
+
+    impl Parse for JobArgs {
+        fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+            if input.is_empty() {
+                return Ok(JobArgs::default());
+            }
+            let key: Ident = input.parse()?;
+            if key != "type" {
+                return Err(syn::Error::new(key.span(), "expected `type = \"...\"`"));
+            }
+            input.parse::<syn::Token![=]>()?;
+            let v: LitStr = input.parse()?;
+            Ok(JobArgs { ty: Some(v) })
+        }
+    }
+
+    fn kebab_case(ident: &Ident) -> String {
+        let s = ident.to_string();
+        let mut out = String::new();
+        for (i, ch) in s.chars().enumerate() {
+            if ch.is_uppercase() {
+                if i != 0 {
+                    out.push('-');
+                }
+                for lc in ch.to_lowercase() {
+                    out.push(lc);
+                }
+            } else {
+                out.push(ch);
+            }
+        }
+        out
+    }
+
+    let JobArgs { ty } = parse_macro_input!(args as JobArgs);
+    let mut item = parse_macro_input!(input as ItemStruct);
+
+    item.attrs.retain(|a| !a.path().is_ident("job"));
+
+    let name = item.ident.clone();
+    let type_s = ty.unwrap_or_else(|| LitStr::new(&kebab_case(&name), name.span()));
+
+    let handler_fn = format_ident!("__purwa_job_handle_{}", name);
+
+    let expanded = quote! {
+        #item
+
+        impl ::purwa_queue::Job for #name {
+            const TYPE: &'static str = #type_s;
+        }
+
+        fn #handler_fn(
+            payload: ::serde_json::Value,
+            ctx: ::purwa_queue::JobContext,
+        ) -> ::purwa_queue::JobHandleFuture {
+            ::core::boxed::Box::pin(async move {
+                let job: #name = ::serde_json::from_value(payload).map_err(|e| e.to_string())?;
+                job.perform(ctx).await
+            })
+        }
+
+        ::purwa_queue::inventory::submit! {
+            ::purwa_queue::JobHandlerEntry {
+                job_type: <#name as ::purwa_queue::Job>::TYPE,
+                handle: #handler_fn,
             }
         }
     };

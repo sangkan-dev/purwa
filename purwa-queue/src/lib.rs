@@ -11,6 +11,8 @@
 
 #![forbid(unsafe_code)]
 
+pub use inventory;
+
 mod redis_keys;
 
 use std::collections::HashMap;
@@ -25,6 +27,17 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 use time::OffsetDateTime;
+
+pub type JobHandleFuture = Pin<Box<dyn Future<Output = Result<(), String>> + Send + 'static>>;
+pub type JobHandleFn = fn(Value, JobContext) -> JobHandleFuture;
+
+#[derive(Clone)]
+pub struct JobHandlerEntry {
+    pub job_type: &'static str,
+    pub handle: JobHandleFn,
+}
+
+inventory::collect!(JobHandlerEntry);
 
 /// Queue configuration.
 #[derive(Clone, Debug)]
@@ -118,8 +131,7 @@ pub enum QueueError {
     InvalidConfig(String),
 }
 
-type HandlerFuture = Pin<Box<dyn Future<Output = Result<(), String>> + Send>>;
-type HandlerFn = Arc<dyn Fn(Value, JobContext) -> HandlerFuture + Send + Sync>;
+type HandlerFn = Arc<dyn Fn(Value, JobContext) -> JobHandleFuture + Send + Sync>;
 
 /// Application-side mapping from `job_type` to handler function.
 #[derive(Clone, Default)]
@@ -130,6 +142,19 @@ pub struct JobRegistry {
 impl JobRegistry {
     pub fn builder() -> JobRegistryBuilder {
         JobRegistryBuilder::default()
+    }
+
+    pub fn from_inventory() -> Self {
+        let mut handlers: HashMap<String, HandlerFn> = HashMap::new();
+        for e in inventory::iter::<JobHandlerEntry> {
+            let job_type = e.job_type.to_string();
+            let handle = e.handle;
+            let fun: HandlerFn = Arc::new(move |payload, ctx| (handle)(payload, ctx));
+            handlers.insert(job_type, fun);
+        }
+        Self {
+            handlers: Arc::new(handlers),
+        }
     }
 
     fn handler(&self, job_type: &str) -> Option<&HandlerFn> {
@@ -211,6 +236,10 @@ impl Worker {
             pool: queue.pool.clone(),
             registry,
         }
+    }
+
+    pub fn from_inventory(queue: &Queue) -> Self {
+        Self::new(queue, JobRegistry::from_inventory())
     }
 
     pub async fn run(&self) -> Result<(), QueueError> {
@@ -307,6 +336,23 @@ impl Worker {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    static TESTCALLS: AtomicUsize = AtomicUsize::new(0);
+
+    fn testcontainers_ok_job_handle(_payload: Value, _ctx: JobContext) -> JobHandleFuture {
+        Box::pin(async move {
+            TESTCALLS.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        })
+    }
+
+    inventory::submit! {
+        JobHandlerEntry {
+            job_type: "ok-job",
+            handle: testcontainers_ok_job_handle,
+        }
+    }
 
     #[tokio::test]
     async fn integration_smoke_via_test_redis_url_env() {
@@ -336,6 +382,32 @@ mod tests {
 
         q.enqueue(&OkJob).await.unwrap();
         w.run_once().await.unwrap();
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn integration_testcontainers_smoke() {
+        use testcontainers_modules::redis::Redis;
+        use testcontainers_modules::testcontainers::runners::AsyncRunner;
+
+        let node = Redis::default().start().await.unwrap();
+        let host_ip = node.get_host().await.unwrap();
+        let host_port = node.get_host_port_ipv4(6379).await.unwrap();
+        let url = format!("redis://{host_ip}:{host_port}");
+
+        let cfg = QueueConfig {
+            pop_timeout: Duration::from_millis(50),
+            ..QueueConfig::new(url, "test")
+        };
+        let q = Queue::connect(cfg).unwrap();
+
+        let w = Worker::from_inventory(&q);
+        q.enqueue_envelope(JobEnvelope::new("ok-job", serde_json::json!({})))
+            .await
+            .unwrap();
+        w.run_once().await.unwrap();
+
+        assert_eq!(TESTCALLS.load(Ordering::SeqCst), 1);
     }
 
     #[test]

@@ -1,13 +1,9 @@
-//! Application jobs (used by `queue-worker`).
+//! Application jobs (loaded by `queue-worker`).
 
 #![forbid(unsafe_code)]
 
+// Export modules so job files compile and can submit inventory entries.
+// (Auto-registration is done via `#[job]` proc-macro.)
 // purwa:jobs-mods
 // purwa:end-jobs-mods
-
-pub fn register_all(builder: purwa_queue::JobRegistryBuilder) -> purwa_queue::JobRegistryBuilder {
-    // purwa:jobs-register
-    // purwa:end-jobs-register
-    builder
-}
 

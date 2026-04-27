@@ -54,6 +54,35 @@ Create a job skeleton:
 empu make:job SendEmail
 ```
 
-This writes a job module under `src/app/jobs/` and ensures `src/app/jobs/mod.rs` has deterministic
-markers for registration. Wire your job logic inside the generated handler.
+This writes a job module under `src/app/jobs/`. Jobs auto-register via the `#[job]` proc-macro
+(inventory), so the worker only needs to ensure your `jobs` modules are compiled.
+
+The generated job includes a `perform(self, ctx)` method you can fill in.
+
+### Macro: `#[job]`
+
+Purwa registers jobs via `inventory`, similar to route registration.
+
+Example:
+
+```rust
+use purwa::job;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[job(type = "send-email")]
+pub struct SendEmail {
+    pub to: String,
+}
+
+impl SendEmail {
+    pub async fn perform(self, _ctx: purwa_queue::JobContext) -> Result<(), String> {
+        Ok(())
+    }
+}
+```
+
+### Testing
+
+- **Local Redis / CI service**: set `TEST_REDIS_URL` and run `cargo test -p purwa-queue`.\n+- **Docker testcontainers**: there is an ignored test you can run explicitly:\n+\n+```bash\n+cargo test -p purwa-queue -- --ignored\n+```\n 
 

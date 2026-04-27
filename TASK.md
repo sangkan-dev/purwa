@@ -337,10 +337,10 @@ Observability bisa dikerjakan paralel dengan cache/events; Tinker mengasumsikan 
 ### Epik: Queue & Jobs (PRD §7.2)
 
 - [x] Crate workspace **`purwa-queue`** (atau modul setara) dengan Redis (`deadpool-redis` / stack yang disepakati).
-- [ ] Macro **`#[job]`** + registrasi + runner (retry, backoff).
+- [x] Macro **`#[job]`** + registrasi + runner (retry, backoff).
 - [x] **`empu make:job`** + dokumentasi konfigurasi Redis.
 - [ ] Penjadwal **cron** (syntax yang didokumentasikan) atau integrasi crate scheduler.
-- [ ] Tes integrasi (testcontainers Redis atau lingkungan sekali pakai).
+- [x] Tes integrasi (testcontainers Redis atau lingkungan sekali pakai).
 
 ### Epik: Mail & Notifications (PRD §7.2)
 

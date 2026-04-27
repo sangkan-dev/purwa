@@ -18,9 +18,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let qcfg = purwa_queue::QueueConfig::new(redis_url, cfg.queue.name.clone());
     let queue = purwa_queue::Queue::connect(qcfg)?;
 
-    let builder = {{ rust_lib_name }}::app::jobs::register_all(purwa_queue::JobRegistry::builder());
-    let registry = builder.build();
-    let worker = purwa_queue::Worker::new(&queue, registry);
+    let _ = stringify!({{ rust_lib_name }}::app::jobs);
+    let worker = purwa_queue::Worker::from_inventory(&queue);
 
     worker.run().await?;
     Ok(())

@@ -2,25 +2,20 @@
 
 #![forbid(unsafe_code)]
 
+use purwa::job;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[job(type = "{{ type_string }}")]
 pub struct {{ name }} {
     // TODO: add fields
 }
 
 impl {{ name }} {
-    pub const TYPE: &'static str = "{{ type_string }}";
-}
-
-pub fn register(
-    builder: purwa_queue::JobRegistryBuilder,
-) -> purwa_queue::JobRegistryBuilder {
-    builder.register_raw({{ name }}::TYPE, |payload, ctx| async move {
+    pub async fn perform(self, ctx: purwa_queue::JobContext) -> Result<(), String> {
         let _ctx = ctx;
-        let _job: {{ name }} = serde_json::from_value(payload).map_err(|e| e.to_string())?;
         // TODO: perform work
         Ok(())
-    })
+    }
 }
 
