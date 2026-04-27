@@ -8,7 +8,7 @@ repository.workspace = true
 readme.workspace = true
 documentation = "https://docs.rs/purwa"
 description = "The fundamental Rust web framework — facade re-exports"
-keywords = ["purwa", "web", "framework", "axum", "inertia", "empu"]
+keywords = ["purwa", "framework", "axum", "inertia", "empu"]
 categories = ["web-programming", "asynchronous"]
 
 [features]
